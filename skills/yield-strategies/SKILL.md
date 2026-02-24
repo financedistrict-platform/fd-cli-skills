@@ -3,7 +3,14 @@ name: yield-strategies
 description: Discover, deposit into, and withdraw from DeFi yield generation strategies across multiple chains and protocols. Use when you or the user want to earn yield, find APY, stake tokens, explore DeFi, farm, deposit into a protocol, withdraw earnings, check yield opportunities, or grow their holdings. Covers "how can I earn on my USDC?", "find me yield", "stake my ETH", "where can I get the best APY?", "withdraw from Aave".
 user-invocable: true
 disable-model-invocation: false
-allowed-tools: ["Bash(fdx status*)", "Bash(fdx call discoverYieldStrategies*)", "Bash(fdx call depositForYield*)", "Bash(fdx call withdrawFromYield*)", "Bash(fdx call getWalletOverview*)"]
+allowed-tools:
+  [
+    'Bash(fdx status*)',
+    'Bash(fdx call discoverYieldStrategies*)',
+    'Bash(fdx call depositForYield*)',
+    'Bash(fdx call withdrawFromYield*)',
+    'Bash(fdx call getWalletOverview*)',
+  ]
 ---
 
 # DeFi Yield Strategies
@@ -44,11 +51,11 @@ fdx call discoverYieldStrategies --chainKey ethereum --sortBy apy --sortDirectio
 | Parameter         | Required | Description                                                           |
 | ----------------- | -------- | --------------------------------------------------------------------- |
 | `--chainKey`      | No       | Filter by blockchain (e.g. `ethereum`, `polygon`, `arbitrum`, `base`) |
-| `--token`         | No       | Filter by token symbol or address (e.g. `USDC`, `WETH`, or `0x...`)  |
-| `--protocolSlug`  | No       | Filter by protocol (e.g. `aave-v3`, `venus`, `compound-v3`)          |
-| `--sortBy`        | No       | Sort field: `apy` or `risk` (default: `apy`)                         |
-| `--sortDirection` | No       | Sort direction: `desc` or `asc` (default: `desc`)                    |
-| `--limit`         | No       | Max results to return, 1-100 (default: 30)                           |
+| `--token`         | No       | Filter by token symbol or address (e.g. `USDC`, `WETH`, or `0x...`)   |
+| `--protocolSlug`  | No       | Filter by protocol (e.g. `aave-v3`, `venus`, `compound-v3`)           |
+| `--sortBy`        | No       | Sort field: `apy` or `risk` (default: `apy`)                          |
+| `--sortDirection` | No       | Sort direction: `desc` or `asc` (default: `desc`)                     |
+| `--limit`         | No       | Max results to return, 1-100 (default: 30)                            |
 
 ## Step 2: Deposit for Yield
 
@@ -69,7 +76,7 @@ fdx call depositForYield \
 | ---------------------- | -------- | ---------------------------------------------------------- |
 | `--strategyId`         | Yes      | Strategy identifier from `discoverYieldStrategies` results |
 | `--fromAccountAddress` | Yes      | Account address to deposit from (EOA or Smart Account)     |
-| `--token`              | Yes      | Token to deposit (e.g. `USDC`, `WETH`, or `0x...`)        |
+| `--token`              | Yes      | Token to deposit (e.g. `USDC`, `WETH`, or `0x...`)         |
 | `--amount`             | Yes      | Amount to deposit (decimal)                                |
 | `--chainKey`           | Yes      | Blockchain where the strategy runs                         |
 
@@ -88,13 +95,13 @@ fdx call withdrawFromYield \
 
 ### withdrawFromYield Parameters
 
-| Parameter              | Required | Description                                                       |
-| ---------------------- | -------- | ----------------------------------------------------------------- |
+| Parameter              | Required | Description                                                         |
+| ---------------------- | -------- | ------------------------------------------------------------------- |
 | `--vaultTokenAddress`  | Yes      | Vault token address (0x...) — use `discoverYieldStrategies` to find |
-| `--underlyingToken`    | Yes      | Underlying token to receive (e.g. `USDC`, `WETH`)                |
-| `--withdrawAmount`     | Yes      | Amount of vault tokens to withdraw (decimal)                      |
-| `--fromAccountAddress` | Yes      | Account holding the vault tokens (EOA or Smart Account)           |
-| `--chainKey`           | Yes      | Blockchain identifier                                             |
+| `--underlyingToken`    | Yes      | Underlying token to receive (e.g. `USDC`, `WETH`)                   |
+| `--withdrawAmount`     | Yes      | Amount of vault tokens to withdraw (decimal)                        |
+| `--fromAccountAddress` | Yes      | Account holding the vault tokens (EOA or Smart Account)             |
+| `--chainKey`           | Yes      | Blockchain identifier                                               |
 
 ## Example Session
 

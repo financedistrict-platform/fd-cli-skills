@@ -3,7 +3,14 @@ name: wallet-overview
 description: Check wallet balances, token holdings, and transaction history across all supported chains. Use when you or the user want to see their balance, check holdings, view portfolio, see what tokens they have, look up recent transactions, check activity, or get their wallet address. Covers "what's in my wallet?", "show my balance", "what's my address?", "show recent transactions".
 user-invocable: true
 disable-model-invocation: false
-allowed-tools: ["Bash(fdx status*)", "Bash(fdx call getWalletOverview*)", "Bash(fdx call getAccountActivity*)", "Bash(fdx call getMyInfo*)", "Bash(fdx call getTokenPrice*)"]
+allowed-tools:
+  [
+    'Bash(fdx status*)',
+    'Bash(fdx call getWalletOverview*)',
+    'Bash(fdx call getAccountActivity*)',
+    'Bash(fdx call getMyInfo*)',
+    'Bash(fdx call getTokenPrice*)',
+  ]
 ---
 
 # Wallet Overview & Activity
@@ -73,11 +80,11 @@ fdx call getAccountActivity --accountAddress 0x1234...abcd --chainKey ethereum -
 
 ### getAccountActivity
 
-| Parameter          | Required | Description                                         |
-| ------------------ | -------- | --------------------------------------------------- |
-| `--accountAddress` | Yes      | Account address to query                            |
-| `--chainKey`       | Yes      | Blockchain identifier                               |
-| `--maxTransactions`| No       | Max transactions to return (default: 25, max: 100)  |
+| Parameter           | Required | Description                                        |
+| ------------------- | -------- | -------------------------------------------------- |
+| `--accountAddress`  | Yes      | Account address to query                           |
+| `--chainKey`        | Yes      | Blockchain identifier                              |
+| `--maxTransactions` | No       | Max transactions to return (default: 25, max: 100) |
 
 ## Supported Chains
 

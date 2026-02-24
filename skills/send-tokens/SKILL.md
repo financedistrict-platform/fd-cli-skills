@@ -3,7 +3,13 @@ name: send-tokens
 description: Send or transfer tokens to any address on any supported chain (EVM or Solana). Use when you or the user want to send money, pay someone, transfer tokens, tip, donate, or move funds to another wallet address. Covers phrases like "send 10 USDC to", "pay 0x...", "transfer ETH to", "move tokens to my other wallet".
 user-invocable: true
 disable-model-invocation: false
-allowed-tools: ["Bash(fdx status*)", "Bash(fdx call transferTokens*)", "Bash(fdx call getWalletOverview*)", "Bash(fdx call resolveNameService*)"]
+allowed-tools:
+  [
+    'Bash(fdx status*)',
+    'Bash(fdx call transferTokens*)',
+    'Bash(fdx call getWalletOverview*)',
+    'Bash(fdx call resolveNameService*)',
+  ]
 ---
 
 # Sending Tokens
@@ -48,14 +54,14 @@ fdx call transferTokens \
 
 ### Parameters
 
-| Parameter              | Required | Description                                                               |
-| ---------------------- | -------- | ------------------------------------------------------------------------- |
-| `--toAddress`          | Yes      | Recipient address (0x... for EVM, Base58 for Solana) or ENS/SNS name      |
-| `--amount`             | Yes      | Amount to send (decimal, e.g. `10`, `0.5`)                                |
-| `--asset`              | Yes      | Asset symbol (e.g. `ETH`, `USDC`, `SOL`) or token contract address        |
-| `--chainKey`           | Yes      | Target blockchain (e.g. `ethereum`, `base`, `bsc`, `solana`)              |
-| `--fromAccountAddress` | No       | Source wallet address (auto-selected if omitted)                          |
-| `--autoApprove`        | No       | Auto-approve transfer up to configured limit (default: false)             |
+| Parameter              | Required | Description                                                          |
+| ---------------------- | -------- | -------------------------------------------------------------------- |
+| `--toAddress`          | Yes      | Recipient address (0x... for EVM, Base58 for Solana) or ENS/SNS name |
+| `--amount`             | Yes      | Amount to send (decimal, e.g. `10`, `0.5`)                           |
+| `--asset`              | Yes      | Asset symbol (e.g. `ETH`, `USDC`, `SOL`) or token contract address   |
+| `--chainKey`           | Yes      | Target blockchain (e.g. `ethereum`, `base`, `bsc`, `solana`)         |
+| `--fromAccountAddress` | No       | Source wallet address (auto-selected if omitted)                     |
+| `--autoApprove`        | No       | Auto-approve transfer up to configured limit (default: false)        |
 
 ## Examples
 

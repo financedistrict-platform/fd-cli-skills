@@ -3,7 +3,14 @@ name: help-and-support
 description: Get help, onboarding guidance, and report issues. Use when you or the user need help with the wallet, have questions about how things work, want a walkthrough, are getting started for the first time, or need to report a bug or problem. Covers "how do I use this?", "help me get started", "I'm new", "something is broken", "report a bug", "what version is this?".
 user-invocable: true
 disable-model-invocation: false
-allowed-tools: ["Bash(fdx status*)", "Bash(fdx call helpNarrative*)", "Bash(fdx call onboardingAssistant*)", "Bash(fdx call reportIssue*)", "Bash(fdx call getAppVersion*)"]
+allowed-tools:
+  [
+    'Bash(fdx status*)',
+    'Bash(fdx call helpNarrative*)',
+    'Bash(fdx call onboardingAssistant*)',
+    'Bash(fdx call reportIssue*)',
+    'Bash(fdx call getAppVersion*)',
+  ]
 ---
 
 # Help & Support
@@ -75,10 +82,10 @@ fdx call reportIssue \
 
 ### Parameters
 
-| Parameter       | Required | Description                                                    |
-| --------------- | -------- | -------------------------------------------------------------- |
-| `--title`       | Yes      | Short summary of the issue                                     |
-| `--description` | Yes      | Detailed description of what happened                          |
+| Parameter       | Required | Description                                                         |
+| --------------- | -------- | ------------------------------------------------------------------- |
+| `--title`       | Yes      | Short summary of the issue                                          |
+| `--description` | Yes      | Detailed description of what happened                               |
 | `--labels`      | No       | Comma-separated labels to apply (e.g. `bug`, `mcp-tool`, `testing`) |
 
 ### Examples

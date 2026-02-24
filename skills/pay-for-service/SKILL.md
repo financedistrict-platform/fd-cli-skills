@@ -3,7 +3,13 @@ name: pay-for-service
 description: Access paid API endpoints and content using the x402 payment protocol. Use when you or the user want to call a paid API, access gated content, make an x402 payment, use a paid service, or retrieve content that requires payment. Covers "fetch this paid resource", "access x402 content", "pay for this API call".
 user-invocable: true
 disable-model-invocation: false
-allowed-tools: ["Bash(fdx status*)", "Bash(fdx call getX402Content*)", "Bash(fdx call authorizePayment*)", "Bash(fdx call getWalletOverview*)"]
+allowed-tools:
+  [
+    'Bash(fdx status*)',
+    'Bash(fdx call getX402Content*)',
+    'Bash(fdx call authorizePayment*)',
+    'Bash(fdx call getWalletOverview*)',
+  ]
 ---
 
 # Paying for Services (x402)
@@ -68,10 +74,10 @@ fdx call authorizePayment \
 
 #### Parameters
 
-| Parameter                            | Required | Description                                                          |
-| ------------------------------------ | -------- | -------------------------------------------------------------------- |
-| `--paymentRequirementsResponseJson`  | Yes      | JSON-serialized PaymentRequirementsResponse from the resource server |
-| `--autoApprove`                      | No       | Auto-approve best payment option (default: false)                    |
+| Parameter                           | Required | Description                                                          |
+| ----------------------------------- | -------- | -------------------------------------------------------------------- |
+| `--paymentRequirementsResponseJson` | Yes      | JSON-serialized PaymentRequirementsResponse from the resource server |
+| `--autoApprove`                     | No       | Auto-approve best payment option (default: false)                    |
 
 ## Examples
 

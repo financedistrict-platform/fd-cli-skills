@@ -1,9 +1,9 @@
 ---
 name: smart-accounts
-description: "[DEPRECATED] Smart account deployment and ownership management tools (deploySmartAccount, manageSmartAccountOwnership) have been removed from the MCP server. Smart Accounts can still be used as the fromAccountAddress in transferTokens, swapTokens, depositForYield, and withdrawFromYield. See wallet-overview skill to view existing Smart Accounts."
+description: '[DEPRECATED] Smart account deployment and ownership management tools (deploySmartAccount, manageSmartAccountOwnership) have been removed from the MCP server. Smart Accounts can still be used as the fromAccountAddress in transferTokens, swapTokens, depositForYield, and withdrawFromYield. See wallet-overview skill to view existing Smart Accounts.'
 user-invocable: false
 disable-model-invocation: true
-allowed-tools: ["Bash(fdx call getWalletOverview*)"]
+allowed-tools: ['Bash(fdx call getWalletOverview*)']
 ---
 
 # Smart Account Management (Deprecated)
