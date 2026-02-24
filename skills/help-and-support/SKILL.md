@@ -3,7 +3,14 @@ name: help-and-support
 description: Get help, onboarding guidance, and report issues. Use when you or the user need help with the wallet, have questions about how things work, want a walkthrough, are getting started for the first time, or need to report a bug or problem. Covers "how do I use this?", "help me get started", "I'm new", "something is broken", "report a bug", "what version is this?".
 user-invocable: true
 disable-model-invocation: false
-allowed-tools: ["Bash(fdx status*)", "Bash(fdx call helpNarrative*)", "Bash(fdx call onboardingAssistant*)", "Bash(fdx call reportIssue*)", "Bash(fdx call getAppVersion*)"]
+allowed-tools:
+  [
+    'Bash(fdx status*)',
+    'Bash(fdx call helpNarrative*)',
+    'Bash(fdx call onboardingAssistant*)',
+    'Bash(fdx call reportIssue*)',
+    'Bash(fdx call getAppVersion*)',
+  ]
 ---
 
 # Help & Support
@@ -75,12 +82,11 @@ fdx call reportIssue \
 
 ### Parameters
 
-| Parameter       | Required | Description                                               |
-| --------------- | -------- | --------------------------------------------------------- |
-| `--title`       | Yes      | Short summary of the issue                                |
-| `--description` | Yes      | Detailed description of what happened                     |
-| `--severity`    | No       | Issue severity (e.g. `low`, `medium`, `high`, `critical`) |
-| `--category`    | No       | Issue category (e.g. `bug`, `feature`, `question`)        |
+| Parameter       | Required | Description                                                         |
+| --------------- | -------- | ------------------------------------------------------------------- |
+| `--title`       | Yes      | Short summary of the issue                                          |
+| `--description` | Yes      | Detailed description of what happened                               |
+| `--labels`      | No       | Comma-separated labels to apply (e.g. `bug`, `mcp-tool`, `testing`) |
 
 ### Examples
 
@@ -88,8 +94,7 @@ fdx call reportIssue \
 fdx call reportIssue \
   --title "Swap fails on Polygon" \
   --description "Attempting to swap USDC to ETH on Polygon returns a timeout error after 30 seconds" \
-  --severity high \
-  --category bug
+  --labels "bug,mcp-tool"
 ```
 
 ## Check App Version
@@ -113,7 +118,7 @@ Useful for including version information in bug reports or verifying compatibili
 1. Ask the human to describe the problem
 2. Check app version: `fdx call getAppVersion`
 3. Check auth status: `fdx status`
-4. Submit the report: `fdx call reportIssue --title "..." --description "..." --severity <level>`
+4. Submit the report: `fdx call reportIssue --title "..." --description "..." --labels "bug"`
 5. Confirm to the human that the issue has been reported
 
 ## Prerequisites

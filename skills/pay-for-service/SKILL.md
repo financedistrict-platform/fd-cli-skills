@@ -3,7 +3,13 @@ name: pay-for-service
 description: Access paid API endpoints and content using the x402 payment protocol. Use when you or the user want to call a paid API, access gated content, make an x402 payment, use a paid service, or retrieve content that requires payment. Covers "fetch this paid resource", "access x402 content", "pay for this API call".
 user-invocable: true
 disable-model-invocation: false
-allowed-tools: ["Bash(fdx status*)", "Bash(fdx call getX402Content*)", "Bash(fdx call authorizePayment*)", "Bash(fdx call getWalletOverview*)"]
+allowed-tools:
+  [
+    'Bash(fdx status*)',
+    'Bash(fdx call getX402Content*)',
+    'Bash(fdx call authorizePayment*)',
+    'Bash(fdx call getWalletOverview*)',
+  ]
 ---
 
 # Paying for Services (x402)
@@ -57,17 +63,21 @@ fdx call getX402Content --url <endpoint-url>
 | `--preferredAsset`       | No       | Preferred payment asset (e.g. `USDC`)                 |
 | `--maxPaymentAmount`     | No       | Maximum payment amount to authorize                   |
 
-### authorizePayment — Pre-authorize a payment
+### authorizePayment — Authorize from a 402 response
 
-For cases where you want to inspect payment requirements or authorize without fetching:
+For cases where you already have the payment requirements JSON from an HTTP 402 response, you can authorize payment directly:
 
 ```bash
-fdx call authorizePayment --url <endpoint-url>
+fdx call authorizePayment \
+  --paymentRequirementsResponseJson '<json>'
 ```
 
 #### Parameters
 
-Same as `getX402Content`.
+| Parameter                           | Required | Description                                                          |
+| ----------------------------------- | -------- | -------------------------------------------------------------------- |
+| `--paymentRequirementsResponseJson` | Yes      | JSON-serialized PaymentRequirementsResponse from the resource server |
+| `--autoApprove`                     | No       | Auto-approve best payment option (default: false)                    |
 
 ## Examples
 
@@ -87,9 +97,14 @@ fdx call getX402Content \
   --url https://api.example.com/premium/data \
   --maxPaymentAmount 1000000
 
-# Just authorize without fetching
+# Authorize payment from a 402 response body
 fdx call authorizePayment \
-  --url https://api.example.com/premium/data
+  --paymentRequirementsResponseJson '{"x402Version":1,"error":"Payment Required","accepts":[...]}'
+
+# Auto-approve authorization
+fdx call authorizePayment \
+  --paymentRequirementsResponseJson '{"x402Version":1,"error":"Payment Required","accepts":[...]}' \
+  --autoApprove true
 ```
 
 ## Flow

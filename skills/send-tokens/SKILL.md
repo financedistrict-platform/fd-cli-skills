@@ -3,12 +3,18 @@ name: send-tokens
 description: Send or transfer tokens to any address on any supported chain (EVM or Solana). Use when you or the user want to send money, pay someone, transfer tokens, tip, donate, or move funds to another wallet address. Covers phrases like "send 10 USDC to", "pay 0x...", "transfer ETH to", "move tokens to my other wallet".
 user-invocable: true
 disable-model-invocation: false
-allowed-tools: ["Bash(fdx status*)", "Bash(fdx call transferTokens*)", "Bash(fdx call getWalletOverview*)"]
+allowed-tools:
+  [
+    'Bash(fdx status*)',
+    'Bash(fdx call transferTokens*)',
+    'Bash(fdx call getWalletOverview*)',
+    'Bash(fdx call resolveNameService*)',
+  ]
 ---
 
 # Sending Tokens
 
-Use the `fdx call transferTokens` command to transfer tokens from the wallet to any address on any supported EVM chain or Solana.
+Use the `fdx call transferTokens` command to transfer tokens from the wallet to any address on any supported EVM chain or Solana. Supports asset symbols (e.g. `USDC`, `ETH`, `SOL`) and ENS/SNS name resolution.
 
 ## Confirm wallet is authenticated
 
@@ -26,27 +32,36 @@ Always verify the wallet has sufficient balance before initiating a transfer:
 fdx call getWalletOverview --chainKey <chain>
 ```
 
+## Resolve a Name (Optional)
+
+If the recipient provides an ENS (.eth), SNS (.sol), or Unstoppable Domain name, you can resolve it first:
+
+```bash
+fdx call resolveNameService --nameOrAddress "vitalik.eth"
+```
+
+Or pass the name directly to `--toAddress` — the server supports ENS/SNS resolution.
+
 ## Sending Tokens
 
 ```bash
 fdx call transferTokens \
-  --chainKey <chain> \
-  --recipientAddress <address> \
-  --amount <amount>
+  --toAddress <address-or-name> \
+  --amount <amount> \
+  --asset <symbol-or-address> \
+  --chainKey <chain>
 ```
 
 ### Parameters
 
-| Parameter                | Required | Description                                                      |
-| ------------------------ | -------- | ---------------------------------------------------------------- |
-| `--chainKey`             | Yes      | Target blockchain (e.g. `ethereum`, `polygon`, `base`, `solana`) |
-| `--recipientAddress`     | Yes      | Destination wallet address                                       |
-| `--amount`               | Yes      | Amount to send (human-readable, e.g. `10`, `0.5`)                |
-| `--fromAccountAddress`   | No       | Source account address (if wallet has multiple accounts)         |
-| `--tokenAddress`         | No       | Token contract address (omit for native token like ETH or SOL)   |
-| `--memo`                 | No       | Optional memo or note for the transaction                        |
-| `--maxPriorityFeePerGas` | No       | EVM gas tip override                                             |
-| `--maxFeePerGas`         | No       | EVM max gas fee override                                         |
+| Parameter              | Required | Description                                                          |
+| ---------------------- | -------- | -------------------------------------------------------------------- |
+| `--toAddress`          | Yes      | Recipient address (0x... for EVM, Base58 for Solana) or ENS/SNS name |
+| `--amount`             | Yes      | Amount to send (decimal, e.g. `10`, `0.5`)                           |
+| `--asset`              | Yes      | Asset symbol (e.g. `ETH`, `USDC`, `SOL`) or token contract address   |
+| `--chainKey`           | Yes      | Target blockchain (e.g. `ethereum`, `base`, `bsc`, `solana`)         |
+| `--fromAccountAddress` | No       | Source wallet address (auto-selected if omitted)                     |
+| `--autoApprove`        | No       | Auto-approve transfer up to configured limit (default: false)        |
 
 ## Examples
 
@@ -55,53 +70,66 @@ fdx call transferTokens \
 ```bash
 # Send 0.1 ETH on Ethereum
 fdx call transferTokens \
-  --chainKey ethereum \
-  --recipientAddress 0x1234...abcd \
-  --amount 0.1
+  --toAddress 0x1234...abcd \
+  --amount 0.1 \
+  --asset ETH \
+  --chainKey ethereum
 
 # Send 1 SOL on Solana
 fdx call transferTokens \
-  --chainKey solana \
-  --recipientAddress AbCd...1234 \
-  --amount 1
+  --toAddress AbCd...1234 \
+  --amount 1 \
+  --asset SOL \
+  --chainKey solana
 ```
 
 ### Send ERC-20 tokens
 
 ```bash
-# Send 100 USDC on Ethereum (specify token contract)
+# Send 100 USDC on Ethereum
 fdx call transferTokens \
-  --chainKey ethereum \
-  --recipientAddress 0x1234...abcd \
+  --toAddress 0x1234...abcd \
   --amount 100 \
-  --tokenAddress 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+  --asset USDC \
+  --chainKey ethereum
 
-# Send 50 USDC on Base
+# Send 50 USDT on BSC
 fdx call transferTokens \
-  --chainKey base \
-  --recipientAddress 0x1234...abcd \
+  --toAddress 0x1234...abcd \
   --amount 50 \
-  --tokenAddress 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+  --asset USDT \
+  --chainKey bsc
 ```
 
-### Send with memo
+### Send to an ENS name
 
 ```bash
 fdx call transferTokens \
-  --chainKey ethereum \
-  --recipientAddress 0x1234...abcd \
+  --toAddress vitalik.eth \
   --amount 10 \
-  --tokenAddress 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 \
-  --memo "Payment for invoice #42"
+  --asset USDC \
+  --chainKey ethereum
+```
+
+### Send from a specific account
+
+```bash
+fdx call transferTokens \
+  --toAddress 0x1234...abcd \
+  --amount 10 \
+  --asset USDC \
+  --chainKey base \
+  --fromAccountAddress 0xMySmartAccount...
 ```
 
 ## Flow
 
 1. Check authentication with `fdx status`
 2. Check balance with `fdx call getWalletOverview --chainKey <chain>`
-3. Confirm the transfer details with the human (amount, recipient, chain, token)
-4. Execute with `fdx call transferTokens`
-5. Report the transaction result to the human
+3. Optionally resolve ENS/SNS names: `fdx call resolveNameService --nameOrAddress "name.eth"`
+4. Confirm the transfer details with the human (amount, recipient, chain, asset)
+5. Execute with `fdx call transferTokens`
+6. Report the transaction result to the human
 
 **Important:** Always confirm the recipient address and amount with your human before executing, especially for large amounts. Blockchain transactions are irreversible.
 

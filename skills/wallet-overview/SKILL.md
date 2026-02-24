@@ -3,12 +3,19 @@ name: wallet-overview
 description: Check wallet balances, token holdings, and transaction history across all supported chains. Use when you or the user want to see their balance, check holdings, view portfolio, see what tokens they have, look up recent transactions, check activity, or get their wallet address. Covers "what's in my wallet?", "show my balance", "what's my address?", "show recent transactions".
 user-invocable: true
 disable-model-invocation: false
-allowed-tools: ["Bash(fdx status*)", "Bash(fdx call getWalletOverview*)", "Bash(fdx call getAccountActivity*)", "Bash(fdx call getMyInfo*)"]
+allowed-tools:
+  [
+    'Bash(fdx status*)',
+    'Bash(fdx call getWalletOverview*)',
+    'Bash(fdx call getAccountActivity*)',
+    'Bash(fdx call getMyInfo*)',
+    'Bash(fdx call getTokenPrice*)',
+  ]
 ---
 
 # Wallet Overview & Activity
 
-View wallet balances, token holdings, and transaction history across all supported EVM chains and Solana.
+View wallet balances, token holdings, token prices, and transaction history across all supported EVM chains and Solana.
 
 ## Confirm wallet is authenticated
 
@@ -43,17 +50,23 @@ fdx call getWalletOverview --chainKey ethereum --accountAddress 0x1234...abcd
 
 Returns token balances, holdings, and wallet addresses for the specified scope.
 
+### Token prices
+
+```bash
+# Check a token price
+fdx call getTokenPrice --token ETH
+fdx call getTokenPrice --token USDC
+fdx call getTokenPrice --token BTC
+```
+
 ### Transaction history
 
 ```bash
-# Recent activity across all chains
-fdx call getAccountActivity
+# Activity for a specific account on a specific chain (both required)
+fdx call getAccountActivity --accountAddress 0x1234...abcd --chainKey ethereum
 
-# Specific chain
-fdx call getAccountActivity --chainKey ethereum
-
-# Specific account with pagination
-fdx call getAccountActivity --chainKey ethereum --accountAddress 0x1234...abcd --limit 20 --offset 0
+# Limit the number of results
+fdx call getAccountActivity --accountAddress 0x1234...abcd --chainKey ethereum --maxTransactions 10
 ```
 
 ## Parameters
@@ -67,12 +80,11 @@ fdx call getAccountActivity --chainKey ethereum --accountAddress 0x1234...abcd -
 
 ### getAccountActivity
 
-| Parameter          | Required | Description                        |
-| ------------------ | -------- | ---------------------------------- |
-| `--chainKey`       | No       | Filter by chain                    |
-| `--accountAddress` | No       | Filter by specific account address |
-| `--limit`          | No       | Number of transactions to return   |
-| `--offset`         | No       | Pagination offset                  |
+| Parameter           | Required | Description                                        |
+| ------------------- | -------- | -------------------------------------------------- |
+| `--accountAddress`  | Yes      | Account address to query                           |
+| `--chainKey`        | Yes      | Blockchain identifier                              |
+| `--maxTransactions` | No       | Max transactions to return (default: 25, max: 100) |
 
 ## Supported Chains
 
@@ -101,11 +113,14 @@ fdx call getMyInfo
 # Check full portfolio
 fdx call getWalletOverview
 
+# Check a token price
+fdx call getTokenPrice --token ETH
+
 # Drill into Ethereum holdings
 fdx call getWalletOverview --chainKey ethereum
 
-# See recent Ethereum transactions
-fdx call getAccountActivity --chainKey ethereum --limit 10
+# See recent Ethereum transactions for a specific account
+fdx call getAccountActivity --accountAddress 0x1234...abcd --chainKey ethereum --maxTransactions 10
 ```
 
 ## Prerequisites
