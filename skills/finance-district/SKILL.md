@@ -1,6 +1,8 @@
 ---
-name: agent-wallet
-description: This skill should be used when the user asks about crypto wallets, sending or receiving tokens, swapping or trading crypto, checking balances or portfolio, earning DeFi yield, staking, or paying for API services. Trigger on phrases like "set up wallet", "create a wallet", "send ETH", "swap tokens", "check my balance", "show my portfolio", "how much do I have", "earn yield", "deposit into DeFi", "withdraw from vault", "pay for service", "pay for API", "fund my wallet", "what chains are supported", "bridge tokens", or "buy/sell crypto". Covers the Finance District Agent Wallet CLI (fdx) for wallet management across EVM chains, Solana, and Bitcoin, including onboarding, authentication, transfers, swaps, DeFi strategies, x402 payments, and troubleshooting.
+name: finance-district
+description: This skill should be used when the user asks about Finance District tools, the fdx CLI, crypto wallets, sending or receiving tokens, swapping or trading crypto, checking balances or portfolio, earning DeFi yield, staking, paying for API services, or x402 payments. Trigger on phrases like "set up wallet", "create a wallet", "send ETH", "swap tokens", "check my balance", "show my portfolio", "how much do I have", "earn yield", "deposit into DeFi", "withdraw from vault", "pay for service", "pay for API", "fund my wallet", "what chains are supported", "bridge tokens", "buy/sell crypto", "use fdx", or "Finance District". Covers the Finance District platform CLI (fdx) for wallet management, token operations, DeFi, and payments across EVM chains, Solana, and Bitcoin.
+version: 1.0.0
+homepage: https://fd.xyz
 user-invocable: true
 disable-model-invocation: false
 allowed-tools:
@@ -9,11 +11,20 @@ allowed-tools:
   - "Bash(npm install -g @financedistrict/fdx*)"
   - "Bash(npx @financedistrict/fdx*)"
   - "Bash(which fdx)"
+metadata:
+  openclaw:
+    emoji: "🏦"
+    requires:
+      bins:
+        - fdx
+    install:
+      - type: node
+        package: "@financedistrict/fdx"
 ---
 
-# Finance District Agent Wallet
+# Finance District
 
-The `fdx` CLI gives agents crypto wallet capabilities — hold, send, swap, and earn yield on assets across EVM chains, Solana, and Bitcoin — without managing private keys. All commands return structured JSON.
+The `fdx` CLI is the Finance District platform CLI — giving agents crypto wallet capabilities, token operations, DeFi yield, and payment tools across EVM chains, Solana, and Bitcoin. All commands return structured JSON.
 
 ## 1. Installation & Setup
 
