@@ -1,6 +1,6 @@
 # Finance District Agent Wallet Skills
 
-[Agent Skills](https://skills.sh) for the Finance District crypto wallet. These skills enable AI agents to authenticate, manage wallets, send tokens, swap via DEXs, earn DeFi yield, and more using the [`fdx`](https://www.npmjs.com/package/@financedistrict/fdx) CLI.
+[Agent Skills](https://skills.sh) for the Finance District platform. These skills enable AI agents to authenticate, manage wallets, send tokens, swap via DEXs, earn DeFi yield, manage merchant payments, and configure Points of Service using the [`fdx`](https://www.npmjs.com/package/@financedistrict/fdx) CLI.
 
 ## Available Skills
 
@@ -46,6 +46,14 @@ Send 10 USDC to 0x1234...abcd on Base
 Find yield strategies for my USDC
 ```
 
+```text
+Show my recent payments
+```
+
+```text
+Create an API key for my store
+```
+
 ## Prerequisites
 
 Install the CLI globally:
@@ -63,6 +71,7 @@ Once installed, the `fdx` command is available directly — no `npx` needed.
 - **DeFi yield**: Discover and invest in yield strategies across protocols like Aave, Compound, and more
 - **Smart accounts**: Deploy and manage multi-sig wallets on-chain
 - **Multi-asset x402**: Pay for services with any supported asset on any chain
+- **Prism merchant platform**: Manage payments, API keys, settlement wallets, and Points of Service
 
 ## Contributing
 

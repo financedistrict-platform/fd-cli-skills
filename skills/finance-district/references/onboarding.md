@@ -28,7 +28,7 @@ If you are unsure whether the user already has an account, try `fdx login` first
 
 ## Token Lifecycle
 
-- Access tokens auto-refresh on subsequent `fdx call` commands using the stored refresh token
+- Access tokens auto-refresh on subsequent `fdx wallet call` commands using the stored refresh token
 - If the refresh token is also expired, the user must `fdx login` again
 - Tokens are stored in the OS credential store where available:
   - macOS: Keychain
@@ -46,9 +46,10 @@ Removes stored tokens from the credential store and clears `~/.fdx/auth.json`.
 
 ## Environment Variables
 
-| Variable         | Description                                              | Default              |
-| ---------------- | -------------------------------------------------------- | -------------------- |
-| `FDX_MCP_SERVER` | MCP server URL                                           | `https://mcp.fd.xyz` |
-| `FDX_STORE_PATH` | Token store path                                         | `~/.fdx/auth.json`   |
-| `FDX_LOG_PATH`   | Log file path                                            | `~/.fdx/fdx.log`     |
-| `FDX_LOG_LEVEL`  | Log verbosity (`debug` \| `info` \| `warn` \| `error` \| `off`) | `info`               |
+| Variable             | Description                                              | Default                    |
+| -------------------- | -------------------------------------------------------- | -------------------------- |
+| `FDX_WALLET_MCP_URL` | Wallet MCP server URL                                    | `https://mcp.fd.xyz`       |
+| `FDX_PRISM_MCP_URL`  | Prism MCP server URL                                     | `https://prism-mcp.fd.xyz` |
+| `FDX_STORE_PATH`     | Token store path                                         | `~/.fdx/auth.json`         |
+| `FDX_LOG_PATH`       | Log file path                                            | `~/.fdx/fdx.log`           |
+| `FDX_LOG_LEVEL`      | Log verbosity (`debug` \| `info` \| `warn` \| `error` \| `off`) | `info`                     |

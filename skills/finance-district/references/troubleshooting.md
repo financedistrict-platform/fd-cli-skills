@@ -5,7 +5,7 @@
 | Error | Cause | Resolution |
 |-------|-------|------------|
 | "not authenticated" | No valid session | `fdx login --email <email>` then `fdx verify --code <OTP>` |
-| "token expired" | Access token expired but refresh token available | Auto-refreshes on next `fdx call` — no action needed |
+| "token expired" | Access token expired but refresh token available | Auto-refreshes on next `fdx wallet call` — no action needed |
 | "SESSION_EXPIRED" | Both access and refresh tokens expired | Run `fdx login` again |
 | "AUTH_REFRESH_FAILED" | Token refresh failed | Run `fdx login` to re-authenticate |
 
@@ -27,13 +27,13 @@ Collect this information before reporting issues:
 
 ```bash
 # CLI version
-fdx call getAppVersion
+fdx wallet call getAppVersion
 
 # Authentication state
 fdx status
 
 # Wallet state on relevant chain
-fdx call getWalletOverview --chainKey <chain>
+fdx wallet call getWalletOverview --chainKey <chain>
 ```
 
 ## Reporting Issues
@@ -41,7 +41,7 @@ fdx call getWalletOverview --chainKey <chain>
 When you encounter a problem you cannot resolve:
 
 ```bash
-fdx call reportIssue \
+fdx wallet call reportIssue \
   --title "<short summary>" \
   --description "<detailed description including steps to reproduce, error messages, and diagnostic info>" \
   --labels "bug"

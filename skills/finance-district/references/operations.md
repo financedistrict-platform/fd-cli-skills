@@ -4,7 +4,7 @@ This reference covers the core wallet operations in detail. For every operation,
 
 ## Supported Chains
 
-The wallet supports all popular EVM chains, Solana, and Bitcoin. Common chain keys include `ethereum`, `polygon`, `arbitrum`, `base`, `optimism`, `avalanche`, `bsc`, `solana`, and `bitcoin`. Run `fdx call getWalletOverview` to see all available chains.
+The wallet supports all popular EVM chains, Solana, and Bitcoin. Common chain keys include `ethereum`, `polygon`, `arbitrum`, `base`, `optimism`, `avalanche`, `bsc`, `solana`, and `bitcoin`. Run `fdx wallet call getWalletOverview` to see all available chains.
 
 **Chain capability matrix:**
 
@@ -20,7 +20,7 @@ The wallet supports all popular EVM chains, Solana, and Bitcoin. Common chain ke
 ### Basic transfer
 
 ```bash
-fdx call transferTokens \
+fdx wallet call transferTokens \
   --toAddress <address> \
   --amount <amount> \
   --asset <symbol-or-contract> \
@@ -32,7 +32,8 @@ fdx call transferTokens \
 - `--toAddress` accepts 0x addresses (EVM), Base58 (Solana), ENS names (.eth), SNS names (.sol), and Unstoppable Domains
 - `--asset` accepts token symbols (ETH, USDC, SOL) or contract addresses
 - `--fromAccountAddress` is optional — auto-selected if omitted. Use it to send from a specific Smart Account
-- Resolve names first with `fdx call resolveNameService --nameOrAddress "name.eth"` or pass names directly to `--toAddress`
+- `--autoApprove` (bool) — auto-approve transfer up to configured limit without confirmation prompt
+- Resolve names first with `fdx wallet call resolveNameService --nameOrAddress "name.eth"` or pass names directly to `--toAddress`
 
 ### Safety
 
@@ -45,18 +46,20 @@ fdx call transferTokens \
 ### Basic swap
 
 ```bash
-fdx call swapTokens \
+fdx wallet call swapTokens \
   --chainKey <chain> \
   --tokenIn <symbol> \
   --tokenOut <symbol> \
-  --amount <amount>
+  --amount <amount> \
+  --mode Execute
 ```
 
 ### Key details
 
-- Executes on-chain via DEX protocols (not a centralized exchange)
-- `--maxSlippageBps` controls slippage tolerance in basis points (100 = 1%). Set explicitly for large swaps
-- `--deadlineSeconds` sets a transaction deadline
+- Default `--mode` is `QuoteOnly` (returns quote without executing). Pass `--mode Execute` to actually swap
+- `--objective` controls routing strategy (default: `BestExecution`)
+- `--maxSlippageBps` controls slippage tolerance in basis points (100 = 1%). Set explicitly for large swaps (default: 50 = 0.5%)
+- `--deadlineSeconds` sets a transaction deadline (default: 120)
 - `--tokenIn` and `--tokenOut` accept symbols or contract addresses
 
 ### Common patterns
@@ -70,7 +73,7 @@ fdx call swapTokens \
 ### Discover strategies
 
 ```bash
-fdx call discoverYieldStrategies \
+fdx wallet call discoverYieldStrategies \
   --chainKey <chain> \
   --token <symbol> \
   --sortBy apy \
@@ -83,7 +86,7 @@ Filter by `--protocolSlug` (e.g. `aave-v3`, `compound-v3`, `venus`) for specific
 ### Deposit
 
 ```bash
-fdx call depositForYield \
+fdx wallet call depositForYield \
   --strategyId <id-from-discovery> \
   --fromAccountAddress <address> \
   --token <symbol> \
@@ -94,7 +97,7 @@ fdx call depositForYield \
 ### Withdraw
 
 ```bash
-fdx call withdrawFromYield \
+fdx wallet call withdrawFromYield \
   --vaultTokenAddress <vault-token> \
   --underlyingToken <symbol> \
   --withdrawAmount <amount> \
@@ -114,17 +117,16 @@ fdx call withdrawFromYield \
 ### Fetch paid content
 
 ```bash
-fdx call getX402Content --url <x402-endpoint>
+fdx wallet call getX402Content --url <x402-endpoint>
 ```
 
 ### With preferences
 
 ```bash
-fdx call getX402Content \
+fdx wallet call getX402Content \
   --url <endpoint> \
-  --preferredNetworkName base \
-  --preferredAsset USDC \
-  --maxPaymentAmount 1000000
+  --preferredNetwork base \
+  --preferredAsset USDC
 ```
 
 ### Authorize from a 402 response
@@ -132,9 +134,12 @@ fdx call getX402Content \
 If you already have payment requirements JSON from an HTTP 402 response:
 
 ```bash
-fdx call authorizePayment \
-  --paymentRequirementsResponseJson '<json>'
+fdx wallet call authorizePayment \
+  --paymentRequirementsResponseJson '<json>' \
+  --autoApprove true
 ```
+
+`--autoApprove` skips the confirmation prompt and authorizes payment immediately.
 
 ### Key details
 
@@ -142,11 +147,24 @@ fdx call authorizePayment \
 - Always inform the human about the payment amount before executing, especially for unfamiliar endpoints
 - Check wallet balance on the preferred payment chain before calling
 
+## Smart Account Ownership
+
+Add co-owners to a Smart Account for multi-sig patterns or agent delegation:
+
+```bash
+fdx wallet call manageSmartAccountOwnership \
+  --action addOwner \
+  --accountAddress <smart-account-address> \
+  --ownerAddress <new-owner-address>
+```
+
+Use cases: adding an external Smart Account as parent/owner, adding another AI agent's Smart Account for delegation, or establishing multi-signature approval patterns.
+
 ## Funding the Wallet
 
 There is no CLI command for direct onramp. The wallet is funded by:
 
-1. **Direct transfer**: Send tokens from any external wallet or exchange to the wallet address (get it from `fdx call getWalletOverview`)
+1. **Direct transfer**: Send tokens from any external wallet or exchange to the wallet address (get it from `fdx wallet call getWalletOverview`)
 2. **Web dashboard**: The Finance District platform provides a web-based onramp with credit card support
 
 ### Confirmation times
@@ -156,4 +174,4 @@ There is no CLI command for direct onramp. The wallet is funded by:
 - Solana: near-instant
 - Exchange withdrawals: additional processing time
 
-After funding, verify with `fdx call getWalletOverview --chainKey <chain>`.
+After funding, verify with `fdx wallet call getWalletOverview --chainKey <chain>`.
