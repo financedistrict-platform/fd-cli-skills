@@ -4,7 +4,7 @@
 
 | Condition                                                        | Path        |
 |------------------------------------------------------------------|-------------|
-| HTTP endpoint returns `402 Payment Required`                     | **HTTP path** via `fdx wallet call getX402Content` |
+| HTTP endpoint returns `402 Payment Required`                     | **HTTP path** via `fdx wallet getX402Content` |
 | MCP tool returns `isError: true` with `x402Version` + `accepts`  | **MCP path** — 3-step flow below |
 
 Use whichever path matches the resource type. If the MCP client does not support `_meta`, fall back to HTTP path.
@@ -14,7 +14,7 @@ Use whichever path matches the resource type. If the MCP client does not support
 ## HTTP Path
 
 ```bash
-fdx wallet call getX402Content --url <x402-protected-endpoint>
+fdx wallet getX402Content --url <x402-protected-endpoint>
 ```
 
 CLI handles negotiation, signing, and retry automatically. Use `--help` for parameter details.

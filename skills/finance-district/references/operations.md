@@ -4,7 +4,7 @@ This reference covers the core wallet operations in detail. For every operation,
 
 ## Supported Chains
 
-The wallet supports all popular EVM chains, Solana, and Bitcoin. Common chain keys include `ethereum`, `polygon`, `arbitrum`, `base`, `optimism`, `avalanche`, `bsc`, `solana`, and `bitcoin`. Run `fdx wallet call getWalletOverview` to see all available chains.
+The wallet supports all popular EVM chains, Solana, and Bitcoin. Common chain keys include `ethereum`, `polygon`, `arbitrum`, `base`, `optimism`, `avalanche`, `bsc`, `solana`, and `bitcoin`. Run `fdx wallet getWalletOverview` to see all available chains.
 
 **Chain capability matrix:**
 
@@ -20,7 +20,7 @@ The wallet supports all popular EVM chains, Solana, and Bitcoin. Common chain ke
 ### Basic transfer
 
 ```bash
-fdx wallet call transferTokens \
+fdx wallet transferTokens \
   --toAddress <address> \
   --amount <amount> \
   --asset <symbol-or-contract> \
@@ -33,7 +33,7 @@ fdx wallet call transferTokens \
 - `--asset` accepts token symbols (ETH, USDC, SOL) or contract addresses
 - `--fromAccountAddress` is optional — auto-selected if omitted. Use it to send from a specific Smart Account
 - `--autoApprove` (bool) — auto-approve transfer up to configured limit without confirmation prompt
-- Resolve names first with `fdx wallet call resolveNameService --nameOrAddress "name.eth"` or pass names directly to `--toAddress`
+- Resolve names first with `fdx wallet resolveNameService --nameOrAddress "name.eth"` or pass names directly to `--toAddress`
 
 ### Safety
 
@@ -46,7 +46,7 @@ fdx wallet call transferTokens \
 ### Basic swap
 
 ```bash
-fdx wallet call swapTokens \
+fdx wallet swapTokens \
   --chainKey <chain> \
   --tokenIn <symbol> \
   --tokenOut <symbol> \
@@ -73,7 +73,7 @@ fdx wallet call swapTokens \
 ### Discover strategies
 
 ```bash
-fdx wallet call discoverYieldStrategies \
+fdx wallet discoverYieldStrategies \
   --chainKey <chain> \
   --token <symbol> \
   --sortBy apy \
@@ -86,7 +86,7 @@ Filter by `--protocolSlug` (e.g. `aave-v3`, `compound-v3`, `venus`) for specific
 ### Deposit
 
 ```bash
-fdx wallet call depositForYield \
+fdx wallet depositForYield \
   --strategyId <id-from-discovery> \
   --fromAccountAddress <address> \
   --token <symbol> \
@@ -97,7 +97,7 @@ fdx wallet call depositForYield \
 ### Withdraw
 
 ```bash
-fdx wallet call withdrawFromYield \
+fdx wallet withdrawFromYield \
   --vaultTokenAddress <vault-token> \
   --underlyingToken <symbol> \
   --withdrawAmount <amount> \
@@ -117,13 +117,13 @@ fdx wallet call withdrawFromYield \
 ### Fetch paid content
 
 ```bash
-fdx wallet call getX402Content --url <x402-endpoint>
+fdx wallet getX402Content --url <x402-endpoint>
 ```
 
 ### With preferences
 
 ```bash
-fdx wallet call getX402Content \
+fdx wallet getX402Content \
   --url <endpoint> \
   --preferredNetwork base \
   --preferredAsset USDC
@@ -134,7 +134,7 @@ fdx wallet call getX402Content \
 If you already have payment requirements JSON from an HTTP 402 response:
 
 ```bash
-fdx wallet call authorizePayment \
+fdx wallet authorizePayment \
   --paymentRequirementsResponseJson '<json>' \
   --autoApprove true
 ```
@@ -147,24 +147,11 @@ fdx wallet call authorizePayment \
 - Always inform the human about the payment amount before executing, especially for unfamiliar endpoints
 - Check wallet balance on the preferred payment chain before calling
 
-## Smart Account Ownership
-
-Add co-owners to a Smart Account for multi-sig patterns or agent delegation:
-
-```bash
-fdx wallet call manageSmartAccountOwnership \
-  --action addOwner \
-  --accountAddress <smart-account-address> \
-  --ownerAddress <new-owner-address>
-```
-
-Use cases: adding an external Smart Account as parent/owner, adding another AI agent's Smart Account for delegation, or establishing multi-signature approval patterns.
-
 ## Funding the Wallet
 
 There is no CLI command for direct onramp. The wallet is funded by:
 
-1. **Direct transfer**: Send tokens from any external wallet or exchange to the wallet address (get it from `fdx wallet call getWalletOverview`)
+1. **Direct transfer**: Send tokens from any external wallet or exchange to the wallet address (get it from `fdx wallet getWalletOverview`)
 2. **Web dashboard**: The Finance District platform provides a web-based onramp with credit card support
 
 ### Confirmation times
@@ -174,4 +161,4 @@ There is no CLI command for direct onramp. The wallet is funded by:
 - Solana: near-instant
 - Exchange withdrawals: additional processing time
 
-After funding, verify with `fdx wallet call getWalletOverview --chainKey <chain>`.
+After funding, verify with `fdx wallet getWalletOverview --chainKey <chain>`.

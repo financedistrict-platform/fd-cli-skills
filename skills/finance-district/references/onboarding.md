@@ -28,7 +28,7 @@ If you are unsure whether the user already has an account, try `fdx login` first
 
 ## Token Lifecycle
 
-- Access tokens auto-refresh on subsequent `fdx wallet call` commands using the stored refresh token
+- Access tokens auto-refresh on subsequent `fdx wallet` commands using the stored refresh token
 - If the refresh token is also expired, the user must `fdx login` again
 - Tokens are stored in the OS credential store where available:
   - macOS: Keychain
