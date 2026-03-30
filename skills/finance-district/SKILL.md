@@ -1,6 +1,6 @@
 ---
 name: finance-district
-description: This skill should be used when the user asks about Finance District tools, the fdx CLI, crypto wallets, sending or receiving tokens, swapping or trading crypto, checking balances or portfolio, earning DeFi yield, staking, paying for API services, x402 payments, merchant payments, Points of Service, API keys, settlement wallets, or the Prism platform. Trigger on phrases like "set up wallet", "create a wallet", "send ETH", "swap tokens", "check my balance", "show my portfolio", "how much do I have", "earn yield", "deposit into DeFi", "withdraw from vault", "pay for service", "pay for API", "fund my wallet", "what chains are supported", "bridge tokens", "buy/sell crypto", "use fdx", "Finance District", "list payments", "payment history", "create API key", "manage API keys", "point of service", "POS", "merchant", "earnings", "revenue", "prism", or "Prism Platform". Covers the Finance District platform CLI (fdx) for wallet management, token operations, DeFi, payments across EVM chains, Solana, and Bitcoin, and the Prism merchant platform for payment processing, API key management, and Points of Service configuration. Do NOT use for general payment processing unrelated to Finance District.
+description: Manage crypto wallets and merchant payments via the Finance District platform (fdx CLI). Use when the user mentions wallets, tokens, crypto, DeFi, or merchant payments. Wallet operations — create/setup wallet, send/receive/transfer tokens, swap/trade/exchange crypto, check balance/portfolio, token prices, earn yield, stake, deposit/withdraw from DeFi vaults, x402 payments, pay for API services, fund wallet, bridge tokens, supported chains. Prism merchant operations — Points of Service (POS), create/list/manage API keys, settlement wallets, payment history, list payments, earnings, revenue. Trigger phrases include "set up wallet", "send ETH", "swap tokens", "check my balance", "show portfolio", "how much do I have", "earn yield", "buy/sell crypto", "use fdx", "create API key", "point of service", "payment history", "Prism". Covers EVM chains (Ethereum, Base, Polygon, Arbitrum, Optimism), Solana, and Bitcoin. Do NOT use for general payment processing unrelated to Finance District or fdx.
 version: 1.0.0
 homepage: https://fd.xyz
 user-invocable: true
@@ -231,7 +231,7 @@ For detailed Prism operations guide, see `references/prism-operations.md`.
 | Error | Action |
 |-------|--------|
 | "not authenticated" | Run `fdx login --email <email>` then `fdx verify --code <OTP>` |
-| "token expired" with refresh token | Auto-refreshes on next call — no action needed |
+| "token expired" with refresh token | Auto-refreshes on next call — no action needed. Tokens stored in OS credential store (macOS Keychain, Linux libsecret, Windows DPAPI); fallback: `~/.fdx/auth.json` |
 | "SESSION_EXPIRED" / "AUTH_REFRESH_FAILED" | Refresh token expired — run `fdx login` again |
 | "Insufficient balance" | Check balance with `getWalletOverview`; fund or swap |
 | "No liquidity" | Try smaller amount or different token pair |
