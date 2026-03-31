@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(fdx wallet:*)",
+      "Bash(fdx --version)",
+      "Bash(npm view:*)",
+      "Bash(export FDX_AUTHORITY=\"https://auth.test.1stdigital.tech/fdxyzdev.onmicrosoft.com\")",
+      "Bash(export FDX_CLIENT_ID=\"7f4c5ba2-d2da-44dd-81a0-adc4057d2882\")",
+      "Bash(export FDX_SCOPES=\"api://fd-agent-wallet-mcp/mcp:tools openid offline_access\")",
+      "Bash(export FDX_WALLET_MCP_URL=\"https://wallet-mcp.test.1stdigital.tech\")",
+      "Bash(export FDX_PRISM_MCP_URL=\"https://prism-mcp.test.1stdigital.tech\")",
+      "Bash(fdx status:*)",
+      "Bash(fdx prism:*)",
+      "Bash(curl -sL https://raw.githubusercontent.com/coinbase/x402/main/specs/x402-specification-v2.md)",
+      "Bash(npm list:*)",
+      "Bash(pip list:*)",
+      "Bash(npm search:*)",
+      "Bash(pip index:*)",
+      "WebFetch(domain:docs.openclaw.ai)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:milvus.io)",
+      "WebFetch(domain:dev.to)",
+      "WebFetch(domain:en.wikipedia.org)"
+    ]
+  }
+}
