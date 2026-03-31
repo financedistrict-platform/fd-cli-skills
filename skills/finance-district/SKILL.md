@@ -9,6 +9,7 @@ allowed-tools:
   - "Bash(npm install -g @financedistrict/fdx*)"
   - "Bash(npx @financedistrict/fdx*)"
   - "Bash(which fdx)"
+metadata: {"openclaw":{"emoji":"🏦","requires":{"bins":["fdx"]},"install":[{"type":"node","package":"@financedistrict/fdx"}]}}
 ---
 
 # Finance District
