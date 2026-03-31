@@ -19,7 +19,9 @@
       "Bash(pip index:*)",
       "WebFetch(domain:docs.openclaw.ai)",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:milvus.io)"
+      "WebFetch(domain:milvus.io)",
+      "WebFetch(domain:dev.to)",
+      "WebFetch(domain:en.wikipedia.org)"
     ]
   }
 }
