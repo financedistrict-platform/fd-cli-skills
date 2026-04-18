@@ -1,6 +1,8 @@
-# UCP Protocol Flow — Full Detail
+# UCP Wire — Full Request/Response Detail
 
 The Universal Commerce Protocol (UCP) spec lives at https://github.com/Universal-Commerce-Protocol/ucp. This doc captures the parts you actually need to drive a checkout against a UCP-compliant merchant using the Finance District Prism payment handler.
+
+For the corresponding ACP wire detail, see [acp-wire.md](acp-wire.md). For the user-facing flow that's common to both, see [../SKILL.md](../SKILL.md).
 
 ## Base URL resolution
 

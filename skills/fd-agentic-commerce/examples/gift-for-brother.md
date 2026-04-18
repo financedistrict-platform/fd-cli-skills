@@ -8,13 +8,23 @@ Full walkthrough of the acceptance-test scenario against the live demo store:
 > "Purchase a gift for my brother from Finance District merch store. Pick a few
 > recommendations, confirm with me, then place the order."
 
-## Step 1 — Discover
+## Step 1 — Protocol dispatch
+
+Try ACP first, then UCP:
 
 ```bash
+curl -s -w "\n%{http_code}" https://medusa.test.1stdigital.tech/.well-known/acp.json
+# → 200, includes protocol.name == "acp", handlers include xyz.fd.prism_payment
+#   (would work, but ACP requires a merchant-issued API key we don't have)
+
 curl -s https://medusa.test.1stdigital.tech/.well-known/ucp
+# → also supports UCP. Prefer UCP (no API key needed, JSON search endpoints).
 ```
 
-Response (abbreviated):
+This merchant supports both. Per §7 of SKILL.md we prefer **UCP** when both are
+available. Set `$PROTOCOL=ucp`, `$UCP=https://medusa.test.1stdigital.tech/ucp`.
+
+Response (abbreviated) from UCP discovery:
 ```json
 { "ucp": {
     "version": "2026-01-11",
@@ -168,3 +178,39 @@ curl -s -X POST "$UCP/checkout-sessions/cart_01KPF.../complete" \
 > Receipt: https://medusa.test.1stdigital.tech/orders/...
 >
 > Shipping to Max Doe, Unter den Linden 1, 10115 Berlin, DE. Brother's gonna love it.
+
+---
+
+## ACP variant — same flow, different wire
+
+If the merchant only spoke ACP (or we had a valid API key and preferred ACP):
+
+```bash
+# Discovery
+curl -s https://merchant/.well-known/acp.json
+
+# Browse — parse the RSS feed (no JSON search)
+curl -s https://merchant/acp/product-feed
+
+# Create (note: line_items[].id, not item.id; requires Authorization + Api-Version)
+curl -s -X POST https://merchant/acp/checkout_sessions \
+  -H "Authorization: Bearer $ACP_KEY" \
+  -H "Api-Version: 2026-01-30" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{"line_items":[{"id":"variant_...","quantity":1}],"currency":"eur","capabilities":{}}'
+
+# Update uses POST (not PUT), fulfillment_details.address
+curl -s -X POST https://merchant/acp/checkout_sessions/$ID \
+  -H "Authorization: Bearer $ACP_KEY" -H "Api-Version: 2026-01-30" \
+  -H "Content-Type: application/json" -H "Idempotency-Key: $(uuidgen)" \
+  -d '{"buyer":{"email":"..."},"fulfillment_details":{"address":{"name":"...","line_one":"...","city":"...","state":"...","country":"DE","postal_code":"..."}}}'
+
+# Complete — flat credential shape
+curl -s -X POST https://merchant/acp/checkout_sessions/$ID/complete \
+  -H "Authorization: Bearer $ACP_KEY" -H "Api-Version: 2026-01-30" \
+  -H "Content-Type: application/json" -H "Idempotency-Key: $(uuidgen)" \
+  -d '{"payment_data":{"handler_id":"xyz.fd.prism_payment","instrument":{"type":"x402_authorization","credential":{"type":"x402_authorization","authorization":"<eip3009 auth>","x402_version":2}}}}'
+```
+
+The user-facing steps (pick, confirm, pay, show tx) are identical.
