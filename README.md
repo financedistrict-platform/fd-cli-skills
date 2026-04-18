@@ -7,7 +7,7 @@ Agent Skill for the [Finance District CLI](https://www.npmjs.com/package/@financ
 | Skill | Description |
 | ----- | ----------- |
 | [fd-cli](./SKILL.md) | Finance District CLI — Agent Wallet (transfers, swaps, DeFi yield, x402 payments) and Prism payment gateway (merchant accounts, payments, settlements, Points of Service) |
-| [fd-ucp-commerce](./skills/fd-ucp-commerce/SKILL.md) | Complete shopping checkouts at any UCP-compliant merchant that accepts the Finance District Prism payment handler — catalog search, checkout session lifecycle, x402 payment authorization, and order confirmation |
+| [fd-agentic-commerce](./skills/fd-agentic-commerce/SKILL.md) | Complete shopping checkouts at any agentic-commerce merchant that accepts the Finance District Prism payment handler — catalog search, checkout session lifecycle, x402 payment authorization, and order confirmation. v1 covers UCP; ACP support planned |
 
 ## Installation
 

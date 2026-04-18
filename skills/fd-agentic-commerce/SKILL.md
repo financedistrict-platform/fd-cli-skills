@@ -1,6 +1,6 @@
 ---
-name: fd-ucp-commerce
-description: Complete a shopping checkout at any UCP-compliant merchant that accepts the Finance District Prism payment handler (xyz.fd.prism_payment). Use when the user asks to "buy", "order", "purchase", "shop", "checkout", or "get me something" from a specific store URL, a UCP merchant, or a storefront that supports agentic commerce. Covers the full flow — merchant discovery via /.well-known/ucp, catalog search and product lookup, checkout session create/update/complete, shipping-address collection, x402 payment authorization via the FD Agent Wallet, and order confirmation. Single-merchant purchases only (no cross-merchant carts). Do NOT use for general crypto wallet operations (that's the finance-district skill) or for non-UCP merchant sites.
+name: fd-agentic-commerce
+description: Complete a shopping checkout at any agentic-commerce merchant that accepts the Finance District Prism payment handler (xyz.fd.prism_payment). Supports UCP today; ACP support planned. Use when the user asks to "buy", "order", "purchase", "shop", "checkout", or "get me something" from a specific store URL or an agentic-commerce storefront. Covers the full flow — merchant discovery, catalog search and product lookup, checkout session create/update/complete, shipping-address collection, x402 payment authorization via the FD Agent Wallet, and order confirmation. Single-merchant purchases only (no cross-merchant carts). Do NOT use for general crypto wallet operations (that's the finance-district skill) or for non-agentic merchant sites.
 user-invocable: true
 disable-model-invocation: false
 allowed-tools:
@@ -22,11 +22,12 @@ metadata:
         package: "@financedistrict/fdx"
 ---
 
-# FD UCP Commerce
+# FD Agentic Commerce
 
-Complete purchases at any Universal Commerce Protocol (UCP) merchant that
-accepts the Finance District **Prism payment handler** (`xyz.fd.prism_payment`).
-You drive the HTTP flow with `curl`; the FD Agent Wallet signs the x402 payment.
+Complete purchases at any agentic-commerce merchant that accepts the Finance
+District **Prism payment handler** (`xyz.fd.prism_payment`). v1 covers the
+Universal Commerce Protocol (UCP); ACP support is planned. You drive the HTTP
+flow with `curl`; the FD Agent Wallet signs the x402 payment.
 
 ## 1. Prerequisites
 
