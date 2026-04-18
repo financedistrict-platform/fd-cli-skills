@@ -24,14 +24,30 @@ metadata:
 
 # FD Agentic Commerce
 
-Complete purchases at any agentic-commerce merchant that accepts the Finance
-District **Prism payment handler** (`xyz.fd.prism_payment`). The skill
-auto-detects whether the store speaks **UCP** (Universal Commerce Protocol) or
-**ACP** (Agentic Checkout Protocol) and dispatches to the right wire. Users
-don't need to know — they just shop.
+Shop on behalf of the user at any agentic-commerce merchant that accepts
+Finance District payment. Auto-detects the store's protocol (UCP or ACP) and
+handles everything behind the scenes — the user never needs to hear about
+protocols. You drive HTTP with `curl`; the FD Agent Wallet signs the payment.
 
-You drive the HTTP flow with `curl`; the FD Agent Wallet signs the x402
-payment.
+**First rule: see §0 on how to talk to the user.**
+
+## 0. Talk Like a Shopper, Not a Protocol Nerd
+
+**The user is shopping. They do not care about UCP, ACP, x402, EIP-3009, handlers, or any other protocol/technical name.** Keep that vocabulary out of user-visible messages entirely.
+
+| Instead of saying… | Say this |
+| --- | --- |
+| "Detecting which protocol the store speaks" | "Checking the store" |
+| "Both UCP and ACP available, using UCP" | (say nothing — just proceed) |
+| "Prism payment handler confirmed" | (say nothing — verified internally) |
+| "Authorizing x402 payment via EIP-3009" | "Paying now" |
+| "On-chain tx hash: 0x…" | "Here's your payment confirmation: 0x…" (or just "Transaction: 0x…") |
+| "Checkout session ready_for_complete" | (say nothing — move to the confirmation step) |
+| "Wallet signing via MCP authorizePayment" | "Paying with your wallet" |
+
+Internally, still do all the protocol-level work (that's what this skill is for). But to the user, narrate only: looking up products, presenting recommendations, asking for shipping details, confirming price, paying, showing proof of purchase.
+
+Rule of thumb: **if a word sounds like it belongs in an RFC, don't say it to the user.**
 
 ## 1. Prerequisites
 
@@ -39,6 +55,7 @@ payment.
 - **Merchant URL** — the user must give you the merchant's base URL (e.g. `https://medusa.test.1stdigital.tech`). Do not invent one.
 - **Curl or equivalent HTTP tool** — for every request.
 - **ACP only: merchant API key** — ACP merchants require a Bearer token issued out-of-band. If the merchant speaks ACP, ask the user for their API key before proceeding. UCP does not require one.
+- **A way to generate unique IDs** — every HTTP call needs a unique `Request-Id` and (for POST/PUT) an `Idempotency-Key`. `uuidgen` does not exist on Windows. Detect once at session start, use for all calls. See [references/unique-ids.md](references/unique-ids.md) for the detection order and one-liners (Python is the most portable default).
 
 ## 2. Safety Rules — Non-Negotiable
 
@@ -196,4 +213,5 @@ Load only the one you need for the current step.
 - [references/acp-wire.md](references/acp-wire.md) — ACP request/response shapes, API key + version headers, product-feed parsing
 - [references/payment-payload.md](references/payment-payload.md) — x402 `accepts[]` anatomy, CAIP-2 networks, token decimals, selection heuristics
 - [references/error-recovery.md](references/error-recovery.md) — severity taxonomy, common codes for both protocols
+- [references/unique-ids.md](references/unique-ids.md) — cross-platform Request-Id / Idempotency-Key generation (Python, Node, PowerShell, `uuidgen`)
 - [examples/gift-for-brother.md](examples/gift-for-brother.md) — full walkthrough of the acceptance-test scenario (UCP against the live demo store)

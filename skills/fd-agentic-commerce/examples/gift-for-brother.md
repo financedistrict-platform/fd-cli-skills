@@ -197,19 +197,19 @@ curl -s -X POST https://merchant/acp/checkout_sessions \
   -H "Authorization: Bearer $ACP_KEY" \
   -H "Api-Version: 2026-01-30" \
   -H "Content-Type: application/json" \
-  -H "Idempotency-Key: $(uuidgen)" \
+  -H "Idempotency-Key: $(python -c "import uuid; print(uuid.uuid4())")" \
   -d '{"line_items":[{"id":"variant_...","quantity":1}],"currency":"eur","capabilities":{}}'
 
 # Update uses POST (not PUT), fulfillment_details.address
 curl -s -X POST https://merchant/acp/checkout_sessions/$ID \
   -H "Authorization: Bearer $ACP_KEY" -H "Api-Version: 2026-01-30" \
-  -H "Content-Type: application/json" -H "Idempotency-Key: $(uuidgen)" \
+  -H "Content-Type: application/json" -H "Idempotency-Key: $(python -c "import uuid; print(uuid.uuid4())")" \
   -d '{"buyer":{"email":"..."},"fulfillment_details":{"address":{"name":"...","line_one":"...","city":"...","state":"...","country":"DE","postal_code":"..."}}}'
 
 # Complete — flat credential shape
 curl -s -X POST https://merchant/acp/checkout_sessions/$ID/complete \
   -H "Authorization: Bearer $ACP_KEY" -H "Api-Version: 2026-01-30" \
-  -H "Content-Type: application/json" -H "Idempotency-Key: $(uuidgen)" \
+  -H "Content-Type: application/json" -H "Idempotency-Key: $(python -c "import uuid; print(uuid.uuid4())")" \
   -d '{"payment_data":{"handler_id":"xyz.fd.prism_payment","instrument":{"type":"x402_authorization","credential":{"type":"x402_authorization","authorization":"<eip3009 auth>","x402_version":2}}}}'
 ```
 
