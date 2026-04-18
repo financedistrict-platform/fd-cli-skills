@@ -1,12 +1,12 @@
-# Finance District CLI Skill
+# Finance District Agent Skills
 
-Agent Skill for the [Finance District CLI](https://www.npmjs.com/package/@financedistrict/fdx) (`fdx`). This skill enables AI agents to access Finance District services through a single CLI — **Agent Wallet** for on-chain operations (hold, send, swap, earn DeFi yield across EVM chains, Solana, and Bitcoin) and **Prism** payment gateway for merchant payments, settlements, Points of Service, and API key management.
+Agent Skills for the Finance District platform. Installing this package gives your agent multiple skills that cover wallet management, merchant operations, and agentic shopping.
 
 ## Skills
 
 | Skill | Description |
 | ----- | ----------- |
-| [fd-cli](./SKILL.md) | Finance District CLI — Agent Wallet (transfers, swaps, DeFi yield, x402 payments) and Prism payment gateway (merchant accounts, payments, settlements, Points of Service) |
+| [finance-district](./skills/finance-district/SKILL.md) | Finance District CLI — Agent Wallet (transfers, swaps, DeFi yield, x402 payments) and Prism payment gateway (merchant accounts, payments, settlements, Points of Service, staff management) |
 | [fd-agentic-commerce](./skills/fd-agentic-commerce/SKILL.md) | Complete shopping checkouts at any agentic-commerce merchant that accepts the Finance District Prism payment handler. Auto-detects and dispatches to UCP or ACP — catalog/feed browsing, checkout session lifecycle, x402 payment authorization, and order confirmation |
 
 ## Installation
@@ -19,32 +19,25 @@ npx skills add financedistrict-platform/fd-cli-skills
 
 ## Usage
 
-The skill is automatically available once installed. The agent will use it when relevant tasks are detected.
+Both skills are automatically available once installed. The agent picks the right one based on what you ask.
 
-**Examples:**
+**finance-district** (wallet, DeFi, merchant ops):
 
 ```text
 Sign in to my Finance District account
-```
-
-```text
 Show my balance on Ethereum
-```
-
-```text
 Send 10 USDC to 0x1234...abcd on Base
-```
-
-```text
 Find yield strategies for my USDC
-```
-
-```text
 Show my recent payments
+Create an API key for my store
 ```
 
+**fd-agentic-commerce** (agent-driven shopping):
+
 ```text
-Create an API key for my store
+Buy me a gift from https://medusa.test.1stdigital.tech for my brother
+Order a t-shirt from the FD merch store and ship it to my Berlin address
+Checkout the items in my cart at <merchant>
 ```
 
 ## Prerequisites
