@@ -2,11 +2,12 @@
 
 Agent Skill for the [Finance District CLI](https://www.npmjs.com/package/@financedistrict/fdx) (`fdx`). This skill enables AI agents to access Finance District services through a single CLI — **Agent Wallet** for on-chain operations (hold, send, swap, earn DeFi yield across EVM chains, Solana, and Bitcoin) and **Prism** payment gateway for merchant payments, settlements, Points of Service, and API key management.
 
-## Skill
+## Skills
 
 | Skill | Description |
 | ----- | ----------- |
 | [fd-cli](./SKILL.md) | Finance District CLI — Agent Wallet (transfers, swaps, DeFi yield, x402 payments) and Prism payment gateway (merchant accounts, payments, settlements, Points of Service) |
+| [fd-ucp-commerce](./skills/fd-ucp-commerce/SKILL.md) | Complete shopping checkouts at any UCP-compliant merchant that accepts the Finance District Prism payment handler — catalog search, checkout session lifecycle, x402 payment authorization, and order confirmation |
 
 ## Installation
 
