@@ -1,6 +1,14 @@
 # User Profile — Persistent Memory for Faster Checkouts
 
-The skill maintains a single markdown file with the user's shopping preferences and shipping details, so repeat checkouts don't require re-typing addresses.
+**This file is a fallback.** If the agent's runtime provides a native memory system (Claude Code's `CLAUDE.md` hierarchy, Claude.ai memory, a `Memory` tool, etc.), prefer that — it's the user's single source of truth across all their skills and agents. Only use the skill-local file below when no harness memory is available, or when the user explicitly asks to keep shopping details separate.
+
+When the harness has native memory, map the same concepts (buyer, addresses, recipients, preferences) into whatever structure that memory uses. Don't maintain two copies.
+
+---
+
+## Fallback: skill-local profile file
+
+The skill can maintain a single markdown file with the user's shopping preferences and shipping details, so repeat checkouts don't require re-typing addresses. Use this only when no better memory option exists.
 
 ## File location
 

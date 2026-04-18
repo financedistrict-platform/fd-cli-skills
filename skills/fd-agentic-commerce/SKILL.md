@@ -124,11 +124,19 @@ Present 2–3 thoughtful picks (title, price, why-this-one). Ask which to buy.
 
 **Don't just ask.** A good personal shopper remembers the customer. Before asking the user to type anything, check available memory sources for their details and propose them for confirmation.
 
+**Prefer the agent's native memory. Fall back to a skill-local file only if none is available.**
+
+Most modern agent runtimes (Claude.ai, Claude Code, Cursor, OpenClaw, etc.) provide a memory mechanism — a native `Memory` tool, hierarchical `CLAUDE.md`, a user-profile KB, or similar. That memory is shared across skills and sessions, is the user's one source of truth, and is how they already manage their own info. The skill should use it, not duplicate it.
+
 **Check, in order:**
 
 1. **Conversation context** — has the user mentioned their name, email, or address earlier in this session? Use that.
-2. **Skill profile file** — `~/.claude/skills/fd-agentic-commerce/profile.md`. This is a persistent markdown file the skill maintains across sessions. See [references/user-profile.md](references/user-profile.md) for the format.
-3. **Global CLAUDE.md** — `~/.claude/CLAUDE.md` or project-level `CLAUDE.md`. Users commonly store identity info there.
+2. **Agent's native memory system** — whatever the harness provides:
+   - Claude Code: hierarchical `CLAUDE.md` (`~/.claude/CLAUDE.md`, project `CLAUDE.md`); native `Memory` tool if exposed.
+   - Claude.ai: platform memory / user profile (read via the memory tool).
+   - Other harnesses: their documented memory/profile mechanism.
+   - If you can query this memory, do — ask for "shipping address", "email", "phone", "name" directly.
+3. **Skill-local profile file** — `~/.claude/skills/fd-agentic-commerce/profile.md`. **Fallback only.** Use this when the harness has no memory system, or when the user explicitly asked to keep shopping details separate from their general agent memory. See [references/user-profile.md](references/user-profile.md) for the format.
 4. **OS / git identity** — `git config user.email`, `git config user.name`, `$USER`. Useful for first-time users; weak signal, always confirm.
 5. **The user is shopping for someone else** — if the request says "for my brother" / "for a friend", the recipient name may differ from the user's. The user's email stays as the order-confirmation email; only the shipping name/address is the recipient's.
 
@@ -144,11 +152,15 @@ Present 2–3 thoughtful picks (title, price, why-this-one). Ask which to buy.
 
 If you have **nothing** on file, then ask — but ask compactly in one message, not a bulleted list of six questions. Give context: "I'll need shipping details. Share a name + address block (one line is fine) and I'll parse it."
 
-**After checkout succeeds**, offer to save or update the profile if info was new:
+**After checkout succeeds**, offer to save or update if info was new:
 
-> Want me to save this address as "home" for next time? (yes/no)
+> Want me to remember this address as "home" for next time? (yes/no)
 
-Only write to the profile file with the user's explicit OK. Never save silently. See [references/user-profile.md](references/user-profile.md) for what to save and the file format.
+If yes, **write to the same place you read from**:
+- If the harness has a native memory tool, use it. (One source of truth for the user.)
+- Only fall back to the skill-local `profile.md` when no harness memory is available.
+
+Never save silently. Never save without explicit user consent. See [references/user-profile.md](references/user-profile.md) for the fallback file format.
 
 ### 4.4 Create the checkout session
 
@@ -245,5 +257,5 @@ Load only the one you need for the current step.
 - [references/payment-payload.md](references/payment-payload.md) — x402 `accepts[]` anatomy, CAIP-2 networks, token decimals, selection heuristics
 - [references/error-recovery.md](references/error-recovery.md) — severity taxonomy, common codes for both protocols
 - [references/unique-ids.md](references/unique-ids.md) — cross-platform Request-Id / Idempotency-Key generation (Python, Node, PowerShell, `uuidgen`)
-- [references/user-profile.md](references/user-profile.md) — persistent shopper profile (buyer info, saved addresses, gift recipients) at `~/.claude/skills/fd-agentic-commerce/profile.md`. Read before asking for shipping; write only with user consent.
+- [references/user-profile.md](references/user-profile.md) — persistent shopper profile strategy: prefer the agent runtime's native memory (CLAUDE.md, Memory tool, etc.); skill-local fallback file at `~/.claude/skills/fd-agentic-commerce/profile.md` is documented there. Read before asking for shipping; write only with user consent.
 - [examples/gift-for-brother.md](examples/gift-for-brother.md) — full walkthrough of the acceptance-test scenario (UCP against the live demo store)
