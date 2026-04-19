@@ -47,6 +47,14 @@ Internally, still do all the protocol-level work (that's what this skill is for)
 
 Rule of thumb: **if a word sounds like it belongs in an RFC, don't say it to the user.**
 
+**Second rule: stay autonomous.** A real personal shopper doesn't poll their client for every decision. If the user's opening gave you enough to infer — budget, gift intent, recipient, quantity — **infer silently and proceed**. Ask only when:
+
+1. A safety rule requires confirmation (payment confirm, spending-cap check, overwriting saved info).
+2. You genuinely cannot guess (missing postal code, ambiguous item choice).
+3. A constraint the user stated is violated (over budget, insufficient balance, out of stock).
+
+Every *avoidable* question is friction. "Want to trim the cart?", "Which asset should I pay with?", "Should I use your saved address?" — skip them unless the default answer is genuinely uncertain.
+
 ## 1. Prerequisites
 
 - **FD Agent Wallet MCP attached** — you must have the FD Agent Wallet MCP tools available in your tool list. Look for `authorizePayment`, `getMyInfo`, and `getWalletOverview`. If they are not attached, stop immediately and tell the user to add the MCP server at `https://mcp.fd.xyz` to their MCP client (e.g. Claude Desktop config → `mcpServers`, Claude Code → `claude mcp add fd-wallet https://mcp.fd.xyz`) and sign in through the OAuth flow the server triggers. Do not attempt to proceed without it.
@@ -56,6 +64,17 @@ Rule of thumb: **if a word sounds like it belongs in an RFC, don't say it to the
 - **ACP only: merchant API key** — ACP merchants require a Bearer token issued out-of-band. If the merchant speaks ACP, ask the user for their API key before proceeding. UCP does not require one.
 - **A way to generate unique IDs** — every HTTP call needs a unique `Request-Id` and (for POST/PUT) an `Idempotency-Key`. `uuidgen` does not exist on Windows. Detect once at session start, use for all calls. See [references/unique-ids.md](references/unique-ids.md) for the detection order and one-liners (Python is the most portable default).
 
+### Session context to capture from the opening turn
+
+Before touching the store, scan the user's first message for things they already told you. Store them as session context and reuse silently:
+
+- **Budget ceiling** — parse phrases like "max 100 usd", "under €50", "around $20", "no more than £30". Store as `{ amount, currency }`. If not given, no ceiling is implied — don't invent one.
+- **Gift intent** — phrases like "for my friend", "gift for X", "present for my brother" → treat as gift; recipient name may differ from the user's; ship to recipient, email confirmation to the user.
+- **Item class hints** — "coffee mug", "travel accessories", "something small" → narrows catalog search.
+- **Quantity hints** — "one of each", "a couple of things".
+
+These feed §4.2 (catalog picks) and §4.3 (balance check). Don't re-ask for anything you can read from the opening message.
+
 ## 2. Safety Rules — Non-Negotiable
 
 These protect the user's money. Follow them every time, regardless of protocol.
@@ -63,9 +82,10 @@ These protect the user's money. Follow them every time, regardless of protocol.
 1. **Verify the Prism handler before paying.** The merchant's discovery doc (or the checkout session response, depending on protocol) must advertise `xyz.fd.prism_payment`. If it doesn't, refuse to pay.
 2. **Check wallet balance BEFORE collecting shipping details.** A real shopper doesn't fill in their address and then discover they can't pay. Once items are picked and a rough total is known, read the wallet's balances (§4.3) and compare. If no single supported asset covers the total on any one chain, surface it *before* asking for shipping and offer a trimmed cart. Don't waste the user's time.
 3. **Never pay silently.** Before calling `complete`, show the user: line items, shipping, grand total with currency, shipping destination, and the payment network + asset + human-readable amount. Require explicit "yes, charge $X" confirmation.
-4. **Spending cap: $500 USD-equivalent** (configurable — see §7). If the total exceeds the cap, require the user to type back the exact amount.
-5. **Never overwrite an existing shipping address without asking.** Confirm before updating.
-6. **After payment, always display** the order id, the on-chain tx hash, and any receipt link. The user needs these to verify settlement.
+4. **Respect the user's budget ceiling** (captured in §1). If the planned cart total exceeds it, stop — don't present over-budget picks, don't ask for shipping, don't authorize. Surface the conflict and offer alternatives (trim, cheaper pick, raise ceiling). The ceiling is a hard constraint the user already set; you do not re-ask permission to respect it.
+5. **Spending cap: $500 USD-equivalent** (configurable — see §7). Independent of the user's stated budget. If the total exceeds the cap, require the user to type back the exact amount.
+6. **Never overwrite an existing shipping address without asking.** Confirm before updating.
+7. **After payment, always display** the order id, the on-chain tx hash, and any receipt link. The user needs these to verify settlement.
 
 ## 3. Protocol Dispatch
 
@@ -115,6 +135,8 @@ Fetch the discovery doc. Confirm `xyz.fd.prism_payment` is advertised. If not, r
 
 Present 2–3 thoughtful picks (title, price, why-this-one). Ask which to buy.
 
+**Respect the budget ceiling silently.** If the user told you a ceiling in §1, filter picks so the proposed combined total stays under it (convert if currencies differ — use a ~5% buffer for EUR↔USD etc.). Don't narrate "I'm filtering for budget"; just propose things that fit. If *nothing* reasonable fits, surface the conflict — not as a question, but as a clear statement: *"Everything here starts at €80 — over your $50 ceiling. Want to raise the ceiling or look elsewhere?"*
+
 ### 4.3 Pre-flight balance check — do this BEFORE asking for shipping
 
 Once the user has picked their items, estimate the subtotal (items only — shipping is typically small, and we'll get an exact figure later). Then read the wallet's balances and sanity-check the cart is payable, the way a real shopper would before walking to the counter.
@@ -123,9 +145,17 @@ Once the user has picked their items, estimate the subtotal (items only — ship
 
 1. **Estimate the subtotal.** Sum `unit_price × quantity` from the items you'll add to the cart. Use the cart's currency (e.g. EUR). Don't worry about shipping/tax yet — add a small buffer (~10%) to cover them.
 2. **Read the wallet.** Call the `getWalletOverview` MCP tool (no `chainKey` to get all chains, or loop over the chains the merchant likely supports — Base, Arbitrum, Ethereum + their sepolias for testnet merchants). For each held stablecoin, you have `{ asset, network, balance_atomic, decimals }` — convert to major units.
-3. **Compare.** Does the wallet hold enough of any single supported stablecoin on a single chain to cover the estimate?
-   - **Sufficient on at least one asset/chain** → proceed silently to shipping. No need to narrate the check.
-   - **Insufficient on every option** → stop. Surface the gap *now*. Don't collect shipping for an order that can't pay.
+3. **Pick the preferred asset by currency match.** Reduce FX slippage by picking a stablecoin pegged to the cart's currency when the wallet has enough of it:
+   - **EUR cart** → prefer **EURC**, fall back to **USDC → FDUSD → USDT**
+   - **USD cart** → prefer **USDC**, fall back to **FDUSD → USDT → EURC**
+   - **Other fiat** → fall back to the USD chain (USDC → FDUSD → USDT)
+
+   Walk the preference list in order. Take the first asset/chain combination where the wallet balance covers the subtotal + 10% buffer. Remember this pick — it flows into §4.7 (confirm) and §4.8 (authorize).
+4. **Compare against budget.** If the subtotal (converted to the user's ceiling currency) exceeds the user's stated budget ceiling from §1, treat it as a conflict — surface it and offer to trim, same as an insufficient balance case.
+5. **Decide.**
+   - **Covered on the preferred asset and within budget** → proceed silently to shipping. No narration.
+   - **Covered only on a fallback asset (not the preferred one)** → proceed silently; the fallback is still a valid payment, just with FX slippage later.
+   - **Not covered on anything, or over budget** → stop. Surface the gap *now*. Don't collect shipping for an order that can't pay.
 
 **Surfacing an insufficient-balance situation (§0-friendly):**
 
@@ -141,7 +171,7 @@ Do *not* say "insufficient balance", "chain support", "atomic units", or "stable
 - The balance check is approximate by design. The final authoritative check happens when `authorizePayment` picks an entry. If the pre-flight passes but `authorizePayment` fails (shipping pushed the total over, rate moved, etc.), fall through to the same surfacing pattern above.
 - If `getWalletOverview` itself errors (auth issue, wallet not set up), tell the user to re-auth via their MCP client — don't silently skip the check.
 
-Only proceed to §4.4 once the cart looks payable.
+Only proceed to §4.4 once the cart looks payable **and** the chosen asset/chain is noted for §4.7 and §4.8.
 
 ### 4.4 Collect shipping + buyer info — memory-first
 
@@ -201,25 +231,42 @@ Wait for `status: "ready_for_complete"`.
 
 ### 4.7 Confirm with the user (MANDATORY)
 
-Plain-English summary:
+Plain-English summary. Include the payment asset/chain picked in §4.3, and — if the user gave a budget ceiling in §1 — a one-line budget status.
+
 ```
-Order from <merchant> (via <UCP|ACP>):
+Order from <merchant>:
   • <qty>× <title> — <price>
   Shipping to <city, country>: <shipping>
   Total: <currency> <grand_total>
 
-Paying via Prism → x402 on <network>, <asset_name>, <human_amount>.
+Paying <human_amount> <asset_name> from your <network> balance.
+<(optional)> That's ~<converted> <ceiling_currency>, <under|at|over> your <ceiling> ceiling.
 
 Confirm? (yes/no)
 ```
 
-If total > $500 USD-equivalent, require the user to type back the exact amount.
+Examples:
+- `Paying 42 EURC from your Base Sepolia balance.`
+- `Paying 45 USDC from your Base Sepolia balance. That's ~$45, under your $100 ceiling.`
+
+Do **not** turn the asset choice into a separate question — it was already decided in §4.3 and this is informational only. The "yes/no" is on the *purchase*, not on the asset.
+
+If total > $500 USD-equivalent, require the user to type back the exact amount (safety rule §2.5).
 
 ### 4.8 Authorize payment via FD Agent Wallet
 
-Call the `authorizePayment` MCP tool. It expects a **full x402 `PaymentRequirementsResponse`** envelope as a JSON-serialized string — not a single `accepts[]` entry. Given the envelope, the wallet picks the best entry for you based on balances when `autoApprove: true`.
+Call the `authorizePayment` MCP tool. It expects a **full x402 `PaymentRequirementsResponse`** envelope as a JSON-serialized string — not a single `accepts[]` entry. Given the envelope, the wallet picks an entry to sign against when `autoApprove: true`.
 
-The merchant already gives you the envelope: it's `ucp.payment_handlers["xyz.fd.prism_payment"][i].config` on the checkout-session response (with `x402Version`, `resource`, and `accepts[]` at the top level). Pass it through verbatim.
+The merchant gives you the full envelope at `ucp.payment_handlers["xyz.fd.prism_payment"][i].config` (top-level `x402Version`, `resource`, and `accepts[]`).
+
+**Narrow the envelope to match the asset you chose in §4.3** so the wallet's autoApprove is deterministic:
+
+- Take the envelope
+- Keep every top-level field (`x402Version`, `resource`, `error`, ...) **unchanged**
+- Filter `accepts[]` to the entry (or entries) matching the asset + network you picked in §4.3 (compare by `extra.name` for the token + `network` CAIP-2 id)
+- If the filter leaves the list empty (shouldn't happen if §4.3 did its job), fall back to the full envelope and let autoApprove pick
+
+This preserves the envelope shape the wallet's DTO requires, removes ambiguity about what gets signed, and keeps §4.3's currency-match decision binding all the way through settlement.
 
 Arguments:
 
