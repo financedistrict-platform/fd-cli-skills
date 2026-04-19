@@ -259,14 +259,29 @@ Call the `authorizePayment` MCP tool. It expects a **full x402 `PaymentRequireme
 
 The merchant gives you the full envelope at `ucp.payment_handlers["xyz.fd.prism_payment"][i].config` (top-level `x402Version`, `resource`, and `accepts[]`).
 
-**Narrow the envelope to match the asset you chose in §4.3** so the wallet's autoApprove is deterministic:
+**Narrow the envelope to match the asset you chose in §4.3** so the wallet's autoApprove is deterministic.
 
-- Take the envelope
-- Keep every top-level field (`x402Version`, `resource`, `error`, ...) **unchanged**
-- Filter `accepts[]` to the entry (or entries) matching the asset + network you picked in §4.3 (compare by `extra.name` for the token + `network` CAIP-2 id)
-- If the filter leaves the list empty (shouldn't happen if §4.3 did its job), fall back to the full envelope and let autoApprove pick
+**Critical: do NOT rebuild the envelope from scratch. Clone the merchant's envelope, then replace only the `accepts` array.** The wallet's parser has `resource` as a required top-level field — if you reconstruct the envelope and forget it, the tool errors before it ever reads your `accepts[]`.
 
-This preserves the envelope shape the wallet's DTO requires, removes ambiguity about what gets signed, and keeps §4.3's currency-match decision binding all the way through settlement.
+Correct pattern (pseudocode):
+
+```
+envelope = deepClone(prism_checkout_config.config)  // copies x402Version, resource, error, accepts, ...
+envelope.accepts = envelope.accepts.filter(e =>
+  e.extra.name === chosenAssetName &&  // e.g. "EURC"
+  e.network === chosenNetwork           // e.g. "eip155:84532"
+)
+// envelope.x402Version, envelope.resource, envelope.error — unchanged
+authorizePayment({ paymentRequirementsResponseJson: JSON.stringify(envelope), autoApprove: true })
+```
+
+Incorrect (what the wallet rejects with `missing required property 'resource'`):
+
+```
+{ x402Version: 2, accepts: [...] }   // ← rebuilt from scratch, resource dropped
+```
+
+If the filter leaves `accepts[]` empty (shouldn't happen if §4.3 did its job), fall back to the unmodified envelope and let autoApprove pick.
 
 Arguments:
 

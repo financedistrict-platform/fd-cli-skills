@@ -15,7 +15,14 @@ The merchant's checkout session returns a Prism config at `ucp.payment_handlers[
 }
 ```
 
-All three top-level fields are required. **Do not** unwrap the envelope and pass a single `accepts[]` entry — the wallet's parser rejects that as malformed (missing top-level `resource`). Pass the whole `config` object through verbatim; if the merchant response omits an `error` field, that's fine — it's optional on the envelope.
+All three top-level fields are required (`x402Version`, `resource`, `accepts`). `error` is optional.
+
+**Two common ways to get this wrong, both rejected by the wallet:**
+
+1. **Unwrapping** — passing just one `accepts[]` entry as if it were the whole envelope. The wallet needs the envelope.
+2. **Rebuilding** — narrowing `accepts[]` to the asset you want and constructing a fresh envelope around it without copying `resource` over. The wallet needs `resource` at the top level.
+
+**Always clone the merchant's `config` object, then replace only `accepts[]`.** Don't rebuild from scratch. If the merchant omits `error`, that's fine — it's optional.
 
 ## Anatomy of one `accepts[]` entry
 
