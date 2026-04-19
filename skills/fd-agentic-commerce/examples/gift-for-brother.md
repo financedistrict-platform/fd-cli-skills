@@ -133,14 +133,14 @@ User says "yes".
 
 ## Step 6 — Authorize
 
-Pass the **whole Prism config envelope** (not just one `accepts[]` entry) and let the wallet pick based on its balances:
+Call the `authorizePayment` MCP tool. Pass the **whole Prism config envelope** (not just one `accepts[]` entry) and let the wallet pick based on its balances:
 
-```bash
-# $PRISM_CONFIG = the config object from
-# ucp.payment_handlers["xyz.fd.prism_payment"][0].config  in the session response
-fdx wallet authorizePayment \
-  --paymentRequirementsResponseJson "$(echo "$PRISM_CONFIG" | jq -c .)" \
-  --autoApprove true
+```
+tool:       authorizePayment
+arguments:
+  paymentRequirementsResponseJson:
+    JSON.stringify(ucp.payment_handlers["xyz.fd.prism_payment"][0].config)
+  autoApprove: true
 ```
 
 Returns `{ paymentPayload, paymentRequirements }`. The `paymentRequirements` is the single `accepts[]` entry the wallet chose (e.g. USDC on Base Sepolia) — save both.

@@ -152,7 +152,7 @@ The Prism handler's payment requirements live in `payment_provider` (or `payment
       "type": "x402_authorization",
       "credential": {
         "type": "x402_authorization",
-        "authorization": "<eip3009 authorization string from fdx authorizePayment>",
+        "authorization": "<base64-encoded x402 PaymentAuthorizationResult — see §below>",
         "x402_version":  2
       }
     },

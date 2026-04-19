@@ -1,14 +1,10 @@
 ---
 name: fd-agentic-commerce
-description: Complete a shopping checkout at any agentic-commerce merchant that accepts the Finance District Prism payment handler (xyz.fd.prism_payment). Works with both UCP (Universal Commerce Protocol) and ACP (Agentic Checkout Protocol) merchants — the skill auto-detects which protocol the store speaks. Use when the user asks to "buy", "order", "purchase", "shop", "checkout", or "get me something" from a storefront. Covers the full flow — merchant discovery, catalog/product browsing, checkout session create/update/complete, shipping-address collection, x402 payment authorization via the FD Agent Wallet, and order confirmation. Single-merchant purchases only (no cross-merchant carts). Do NOT use for general crypto wallet operations (that's the finance-district skill).
+description: Complete a shopping checkout at any agentic-commerce merchant that accepts the Finance District Prism payment handler (xyz.fd.prism_payment). Works with both UCP (Universal Commerce Protocol) and ACP (Agentic Checkout Protocol) merchants — the skill auto-detects which protocol the store speaks. Use when the user asks to "buy", "order", "purchase", "shop", "checkout", or "get me something" from a storefront. Covers the full flow — merchant discovery, catalog/product browsing, checkout session create/update/complete, shipping-address collection, x402 payment authorization via the FD Agent Wallet MCP, and order confirmation. Single-merchant purchases only (no cross-merchant carts). Do NOT use for general crypto wallet operations or non-checkout wallet flows.
 user-invocable: true
 disable-model-invocation: false
 allowed-tools:
   - "Bash(curl *)"
-  - "Bash(fdx wallet authorizePayment*)"
-  - "Bash(fdx wallet getWalletOverview*)"
-  - "Bash(fdx status*)"
-  - "Bash(fdx wallet getMyInfo*)"
   - "Read"
   - "Write"
   - "Edit"
@@ -18,13 +14,8 @@ metadata:
   openclaw:
     emoji: "🛍️"
     requires:
-      bins:
-        - fdx
       tools:
         - curl
-    install:
-      - type: node
-        package: "@financedistrict/fdx"
 ---
 
 # FD Agentic Commerce
@@ -56,9 +47,10 @@ Rule of thumb: **if a word sounds like it belongs in an RFC, don't say it to the
 
 ## 1. Prerequisites
 
-- **FD Agent Wallet available** — either `fdx` CLI (`fdx status` returns authenticated) or the FD MCP server at `mcp.fd.xyz` exposing `authorizePayment`. If neither is present, stop and tell the user to install `@financedistrict/fdx` and sign in via the `finance-district` skill.
+- **FD Agent Wallet MCP attached** — you must have the FD Agent Wallet MCP tools available in your tool list. Look for `authorizePayment`, `getMyInfo`, and `getWalletOverview`. If they are not attached, stop immediately and tell the user to add the MCP server at `https://mcp.fd.xyz` to their MCP client (e.g. Claude Desktop config → `mcpServers`, Claude Code → `claude mcp add fd-wallet https://mcp.fd.xyz`) and sign in through the OAuth flow the server triggers. Do not attempt to proceed without it.
+- **Wallet is signed in** — call the `getMyInfo` MCP tool once. If it returns an auth error, tell the user to complete the OAuth flow in their MCP client, then retry. If it returns the wallet identity, proceed.
 - **Merchant URL** — the user must give you the merchant's base URL (e.g. `https://medusa.test.1stdigital.tech`). Do not invent one.
-- **Curl or equivalent HTTP tool** — for every request.
+- **Curl or equivalent HTTP tool** — for every merchant request.
 - **ACP only: merchant API key** — ACP merchants require a Bearer token issued out-of-band. If the merchant speaks ACP, ask the user for their API key before proceeding. UCP does not require one.
 - **A way to generate unique IDs** — every HTTP call needs a unique `Request-Id` and (for POST/PUT) an `Idempotency-Key`. `uuidgen` does not exist on Windows. Detect once at session start, use for all calls. See [references/unique-ids.md](references/unique-ids.md) for the detection order and one-liners (Python is the most portable default).
 
@@ -194,24 +186,20 @@ If total > $500 USD-equivalent, require the user to type back the exact amount.
 
 ### 4.7 Authorize payment via FD Agent Wallet
 
-The wallet's `authorizePayment` tool expects a **full x402 `PaymentRequirementsResponse`** envelope as a JSON-serialized string — not a single `accepts[]` entry. It then picks the best entry for you (given your balances) when `autoApprove=true`, or you preselect via other params.
+Call the `authorizePayment` MCP tool. It expects a **full x402 `PaymentRequirementsResponse`** envelope as a JSON-serialized string — not a single `accepts[]` entry. Given the envelope, the wallet picks the best entry for you based on balances when `autoApprove: true`.
 
-For UCP/ACP flows, the merchant already gives you this envelope: it's `ucp.payment_handlers["xyz.fd.prism_payment"][i].config` on the checkout-session response (with `x402Version`, `resource`, and `accepts[]` at the top level). Pass it through verbatim.
+The merchant already gives you the envelope: it's `ucp.payment_handlers["xyz.fd.prism_payment"][i].config` on the checkout-session response (with `x402Version`, `resource`, and `accepts[]` at the top level). Pass it through verbatim.
 
-```bash
-# CLI — paymentRequirementsResponseJson is the config object, JSON-stringified
-fdx wallet authorizePayment \
-  --paymentRequirementsResponseJson "$(echo "$PRISM_CONFIG" | jq -c .)" \
-  --autoApprove true
-```
+Arguments:
 
-Or via MCP: call the `authorizePayment` tool with:
 - `paymentRequirementsResponseJson` — string-encoded JSON of the full response envelope (top-level `x402Version`, `resource: { url, description }`, `accepts: [...]`)
-- `autoApprove` — `true` to let the wallet pick the best `accepts[]` entry based on available balances
+- `autoApprove` — `true` to let the wallet pick the best `accepts[]` entry from what you can actually pay
 
-Wallet returns a signed `PaymentPayload` plus the `paymentRequirements` entry it signed against. Use BOTH in the complete call (UCP), or extract the EIP-3009 authorization string (ACP).
+The tool returns an object containing a signed `paymentPayload` and the specific `paymentRequirements` entry the wallet chose. Use BOTH in the UCP complete call, or (for ACP) pass the whole returned object as the base64-encoded `credential.authorization`.
 
-For payment selection heuristics, network/asset tables, and atomic-unit conversion, see [references/payment-payload.md](references/payment-payload.md).
+If `authorizePayment` errors with an insufficient-balance or no-matching-option reason, call `getMyInfo` to get the wallet address, call `getWalletOverview` to confirm what's held, and relay to the user: "to pay, you need <asset> on <network>; your wallet address is 0x…".
+
+For envelope shape, network/asset tables, and atomic-unit conversion, see [references/payment-payload.md](references/payment-payload.md).
 
 ### 4.8 Complete the checkout
 

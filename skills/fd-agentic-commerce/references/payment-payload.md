@@ -70,22 +70,16 @@ You don't usually pre-filter `accepts[]` yourself. Pass the **whole envelope** t
 3. **Gasless confirmation** — x402 uses EIP-3009, which is gasless for the payer on supported tokens (USDC, FDUSD); no gas funding needed on the payment chain.
 4. **Testnet discipline** — testnet chains (`:84532`, `:421614`, `:11155111`, `:97`) only settle with testnet funds.
 
-If you want to verify before calling, you can read balances with `fdx wallet getWalletOverview --chainKey <chain>` — but don't narrow `accepts[]` yourself before passing it in.
+If you want to verify before calling, you can read balances with the `getWalletOverview` MCP tool (`chainKey` parameter) — but don't narrow `accepts[]` yourself before passing it in.
 
-If no entry can be satisfied, `authorizePayment` returns an error with the reason. Relay that to the user along with their FD Agent Wallet address (`fdx wallet getMyInfo`) so they know which token + network to fund.
+If no entry can be satisfied, `authorizePayment` returns an error with the reason. Call `getMyInfo` to get the wallet address and relay to the user so they know which token + network to fund.
 
 ## Signing
 
-```bash
-# CLI
-fdx wallet authorizePayment \
-  --paymentRequirementsResponseJson "$(echo "$PRISM_CONFIG" | jq -c .)" \
-  --autoApprove true
-```
+Call the `authorizePayment` MCP tool:
 
-Or via MCP: call the `authorizePayment` tool with the same arguments:
-- `paymentRequirementsResponseJson` — string-encoded JSON of the full envelope
-- `autoApprove` — `true` (recommended) to let the wallet choose
+- `paymentRequirementsResponseJson` — string-encoded JSON of the full envelope (the whole Prism `config` object from the merchant's checkout-session response)
+- `autoApprove` — `true` (recommended) to let the wallet pick the best `accepts[]` entry itself
 
 Returns an object containing:
 - `paymentPayload` — signed EIP-3009 authorization (opaque — do not modify)

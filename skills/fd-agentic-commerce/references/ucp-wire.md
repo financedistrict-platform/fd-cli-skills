@@ -166,8 +166,8 @@ Same body shape as create, all fields optional. Fields you include overwrite the
         "type": "default",
         "credential": {
           "type": "default",
-          "paymentPayload":      { /* from fdx authorizePayment */ },
-          "paymentRequirements": { /* the accepts[] entry you picked */ }
+          "paymentPayload":      { /* from the authorizePayment MCP tool */ },
+          "paymentRequirements": { /* the accepts[] entry echoed back by authorizePayment */ }
         }
       }
     ]

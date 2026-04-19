@@ -96,7 +96,7 @@ If the file doesn't exist yet, create it on first confirmed save with the frontm
 - This file can contain PII (name, address, phone, email). It is local-only and never transmitted except as part of a checkout request the user confirmed.
 - Do not sync this file to a public repo. The skill assumes it lives in the user's home directory under `.claude/`.
 - If the user asks "what do you know about me?" read the file and show them. If they ask to wipe it, delete the file entirely.
-- Do NOT store anything payment-related beyond the `payment_network` / `payment_asset` preferences (those are just routing hints). Never store wallet private keys, session tokens, or API keys — those live elsewhere (`fdx` CLI manages its own credentials).
+- Do NOT store anything payment-related beyond the `payment_network` / `payment_asset` preferences (those are just routing hints). Never store wallet private keys, session tokens, or API keys — those live in the FD Agent Wallet MCP server, not here.
 
 ## Multiple recipients
 
