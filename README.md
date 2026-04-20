@@ -4,11 +4,7 @@ Claude skills for the Finance District command-line tooling (`fdx`). Covers wall
 
 Looking for the **shopping assistant** (pays at FD-enabled stores on your behalf)? That skill moved to [**fd-assistant-skills**](https://github.com/financedistrict-platform/fd-assistant-skills) — it's MCP-only and no longer needs the CLI.
 
-## Skills
-
-| Skill | Description |
-| ----- | ----------- |
-| [finance-district](./skills/finance-district/SKILL.md) | Finance District CLI — Agent Wallet (transfers, swaps, DeFi yield, x402 payments) and Prism payment gateway (merchant accounts, payments, settlements, Points of Service, staff management) |
+See [SKILL.md](./SKILL.md) for the full skill definition — covers Agent Wallet (transfers, swaps, DeFi yield, x402 payments) and Prism payment gateway (merchant accounts, payments, settlements, Points of Service, staff management).
 
 ## Installation
 
