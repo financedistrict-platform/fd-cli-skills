@@ -1,6 +1,6 @@
 ---
 name: finance-district
-description: Manage agent crypto wallets and merchant payments via the Finance District platform (fdx CLI). Use when the user mentions wallets, tokens, crypto, DeFi, or merchant payments. Wallet operations — create/setup wallet, send/receive/transfer tokens, swap/trade/exchange crypto, check balance/portfolio, token prices, earn yield, stake, deposit/withdraw from DeFi vaults, x402 payments, pay for API services, fund wallet, bridge tokens, supported chains. Prism merchant operations — Points of Service (POS), create/list/manage API keys, settlement wallets, payment history, list payments, earnings, revenue, staff management (invite staff to a POS, revoke staff access from a POS, list staff members). Trigger phrases include "set up wallet", "send ETH", "swap tokens", "check my balance", "show portfolio", "how much do I have", "earn yield", "buy/sell crypto", "use fdx", "create API key", "point of service", "payment history", "Prism", "invite staff", "revoke staff", "staff access", "manage staff", "list staff". Covers EVM chains (Ethereum, Base, Polygon, Arbitrum, Optimism), Solana, and Bitcoin. Do NOT use for general payment processing unrelated to Finance District or fdx.
+description: Manage agent crypto wallets and merchant payments via the Finance District platform (fdx CLI). Use when the user mentions wallets, tokens, crypto, DeFi, or merchant payments. Wallet operations — create/setup wallet, send/receive/transfer tokens, swap/trade/exchange crypto, check balance/portfolio, token prices, earn yield, stake, deposit/withdraw from DeFi vaults, x402 payments, pay for API services, fund wallet, bridge tokens, supported chains. Prism merchant operations — Projects, create/list/manage Project Identify Tokens, settlement wallets, payment history, list payments, earnings, revenue, staff management (invite staff to a project, revoke staff access from a project, list staff members). Trigger phrases include "set up wallet", "send ETH", "swap tokens", "check my balance", "show portfolio", "how much do I have", "earn yield", "buy/sell crypto", "use fdx", "create project identify token", "project", "payment history", "Prism", "invite staff", "revoke staff", "staff access", "manage staff", "list staff". Covers EVM chains (Ethereum, Base, Polygon, Arbitrum, Optimism), Solana, and Bitcoin. Do NOT use for general payment processing unrelated to Finance District or fdx.
 user-invocable: true
 disable-model-invocation: false
 allowed-tools:
@@ -25,7 +25,7 @@ metadata:
 The `fdx` CLI is the Finance District platform CLI with two service areas:
 
 - **Wallet** (`fdx wallet`) — crypto wallet management, token transfers, DEX swaps, DeFi yield, and x402 payments across EVM chains, Solana, and Bitcoin
-- **Prism** (`fdx prism`) — payment gateway purpose-built for agentic commerce. Exposes tools to manage merchant accounts, Points of Service, API keys, and settlement wallets
+- **Prism** (`fdx prism`) — payment gateway purpose-built for agentic commerce. Exposes tools to manage merchant accounts, Projects, Project Identify Tokens, and settlement wallets
 
 ## 1. Prerequisites
 
@@ -139,15 +139,15 @@ Prism is the Finance District payment gateway purpose-built for agentic commerce
 
 ### Setting up as a merchant
 
-Set account type (Personal/Business) → create a Point of Service → configure accepted assets and networks → set up settlement wallets → create API keys.
+Set account type (Personal/Business) → create a Project → configure accepted assets and networks → set up settlement wallets → create Project Identify Tokens.
 
 ### Managing payments and earnings
 
 Use the payment and earnings tools to view transaction history, individual payment details (including blockchain tx hash and settlement breakdown), and earnings summaries over time.
 
-### Points of Service
+### Projects
 
-A Point of Service (PoS) defines your merchant configuration — accepted assets, networks, and settlement wallets. Most Prism tools default to your active PoS. Only pass `--posId` when managing multiple configurations.
+A Project defines your merchant configuration — accepted assets, networks, and settlement wallets. Most Prism tools default to your active Project. Only pass `--projectId` when managing multiple configurations.
 
 For detailed Prism workflow patterns, see [references/prism-operations.md](references/prism-operations.md).
 
@@ -178,6 +178,6 @@ Consult these for deeper guidance on specific topics. **Do not load them all —
 
 - [references/authentication.md](references/authentication.md) — autonomous email setup, register vs login, credential storage, logout
 - [references/operations.md](references/operations.md) — chain capability matrix, safety patterns, advanced wallet workflows
-- [references/prism-operations.md](references/prism-operations.md) — merchant setup patterns, PoS configuration, API key and settlement wallet management
+- [references/prism-operations.md](references/prism-operations.md) — merchant setup patterns, Project configuration, Project Identify Token and settlement wallet management
 - [references/x402-payment-flow.md](references/x402-payment-flow.md) — x402 protocol flow, authorizePayment usage, and getX402Content fallback
 - [references/troubleshooting.md](references/troubleshooting.md) — detailed error reference, diagnostic commands, issue reporting

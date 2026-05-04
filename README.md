@@ -4,7 +4,7 @@ Claude skills for the Finance District command-line tooling (`fdx`). Covers wall
 
 Looking for the **shopping assistant** (pays at FD-enabled stores on your behalf)? That skill moved to [**fd-assistant-skills**](https://github.com/financedistrict-platform/fd-assistant-skills) — it's MCP-only and no longer needs the CLI.
 
-See [SKILL.md](./SKILL.md) for the full skill definition — covers Agent Wallet (transfers, swaps, DeFi yield, x402 payments) and Prism payment gateway (merchant accounts, payments, settlements, Points of Service, staff management).
+See [SKILL.md](./SKILL.md) for the full skill definition — covers Agent Wallet (transfers, swaps, DeFi yield, x402 payments) and Prism payment gateway (merchant accounts, payments, settlements, Projects, staff management).
 
 ## Installation
 
@@ -24,7 +24,7 @@ Show my balance on Ethereum
 Send 10 USDC to 0x1234...abcd on Base
 Find yield strategies for my USDC
 Show my recent payments
-Create an API key for my store
+Create a project identify token for my store
 ```
 
 ## Prerequisites
@@ -45,7 +45,7 @@ Once installed, the `fdx` command is available directly — no `npx` needed.
 - **DeFi yield**: Discover and invest in yield strategies across protocols like Aave, Compound, and more
 - **Smart accounts**: Deploy and manage multi-sig wallets on-chain
 - **Multi-asset x402**: Pay for services with any supported asset on any chain
-- **Prism payment gateway**: Manage merchant accounts, payments, API keys, settlement wallets, and Points of Service
+- **Prism payment gateway**: Manage merchant accounts, payments, Project Identify Tokens, settlement wallets, and Projects
 - **Dynamic tool discovery**: Prism tools are auto-discovered from the service at runtime
 
 ## Contributing
