@@ -8,12 +8,12 @@ Setting up a new merchant follows this sequence:
 
 1. **Authenticate**: Complete onboarding if not already authenticated (`fdx status`)
 2. **Discover the provider catalog**: `fdx prism getProviderInfo --includeCountries true` — learn valid country codes, networks, and token symbols before creating the Project
-3. **Create a Project**: `fdx prism createProjectFromWizard` — sets storefront, platform, country, environment, settlement networks, currencies, and wallet source together, and activates the Project
-4. **Check for outstanding config**: `fdx prism getRequiredUpdates` — an empty list means nothing is left to fill in
+3. **Create a Project**: `fdx prism createProject` — sets storefront, platform, country, environment, settlement networks, currencies, and wallet source together, and activates the Project
+4. **Check for outstanding config**: `fdx prism listMissingProjectSettings` — an empty list means nothing is left to fill in
 5. **Fill any gaps**: `fdx prism updateSettlementCurrencies` / `fdx prism updateSettlementFx` as needed
 6. **Create a Project Identify Token**: `fdx prism manageProjectIdentifyToken --action create --expiration <30d|180d|365d|none>` — the secret is returned **only once** on creation, so save it immediately
 7. **Invite staff** (optional): `fdx prism manageStaff --action invite`
-8. **Check status**: `fdx prism getHomeSummary` — the recommended entry point for reading a Project's status going forward
+8. **Check status**: `fdx prism getProjectOverview` — the recommended entry point for reading a Project's status going forward
 
 ## Projects
 
@@ -21,8 +21,8 @@ A Project defines your merchant configuration — accepted assets, networks, and
 
 - **Most tools default to your active Project** — only pass `--projectId` when managing multiple configurations
 - **Configuration sections** can be read and updated independently: `getSettlementSettings` reads networks, currencies, and FX settings in one call; `updateSettlementNetworks`, `updateSettlementCurrencies`, and `updateSettlementFx` update them individually; `resetSettlementDefaults` resets networks, currencies, or wallet source back to platform defaults
-- Use `--help` on `createProjectFromWizard`, `updateProjectAccount`, and the `updateSettlement*` tools for the exact JSON structures expected
-- `getHomeSummary` is the recommended entry point for reading a Project's overall status — prefer it over calling earnings/settlement/payment tools separately
+- Use `--help` on `createProject`, `updateProjectDetails`, and the `updateSettlement*` tools for the exact JSON structures expected
+- `getProjectOverview` is the recommended entry point for reading a Project's overall status — prefer it over calling earnings/settlement/payment tools separately
 
 ## Payment Monitoring Workflow
 
