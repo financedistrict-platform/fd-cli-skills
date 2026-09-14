@@ -23,7 +23,7 @@
 | "Invalid strategyId" | Strategy no longer available | Re-run `discoverYieldStrategies` for current IDs |
 | "No x402 payment requirements found" | URL is not x402-enabled | Verify the URL supports x402 |
 | "tool not found" | Misspelled or unavailable tool | Run `fdx wallet` or `fdx prism` to list available tools |
-| "provider not found" | Prism onboarding incomplete | Set account type with `updateAccountType` |
+| "provider not found" | Prism onboarding incomplete | Set account type with `updateProviderAccountType` |
 
 ## Diagnostic Commands
 

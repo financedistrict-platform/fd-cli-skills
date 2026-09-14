@@ -139,9 +139,9 @@ Prism is the Finance District payment gateway purpose-built for agentic commerce
 
 ### Setting up as a merchant
 
-`getProviderInfo` (with `includeCountries=true`) → `createProjectFromWizard` → `getRequiredUpdates` → `updateSettlementCurrencies` / `updateSettlementFx` → `manageProjectIdentifyToken` action=create with an expiration → `manageStaff` action=invite → `getHomeSummary`.
+`getProviderInfo` (with `includeCountries=true`) → `createProject` → `listMissingProjectSettings` → `updateSettlementCurrencies` / `updateSettlementFx` → `manageProjectIdentifyToken` action=create with an expiration → `manageStaff` action=invite → `getProjectOverview`.
 
-`getHomeSummary` is the recommended entry point for reading a Project's status going forward. `manageProjectIdentifyToken` action=create accepts `expiration` (`30d` | `180d` | `365d` | `none`, where `none` means a key that never expires).
+`getProjectOverview` is the recommended entry point for reading a Project's status going forward. `manageProjectIdentifyToken` action=create accepts `expiration` (`30d` | `180d` | `365d` | `none`, where `none` means a key that never expires).
 
 ### Managing payments and earnings
 
@@ -149,7 +149,7 @@ Use the payment and earnings tools to view transaction history, individual payme
 
 ### Projects
 
-A Project defines your merchant configuration — accepted assets, networks, and settlement wallets. Most Prism tools default to your active Project. Only pass `--projectId` when managing multiple configurations. `getHomeSummary` is the recommended entry point for reading a Project's status.
+A Project defines your merchant configuration — accepted assets, networks, and settlement wallets. Most Prism tools default to your active Project. Only pass `--projectId` when managing multiple configurations. `getProjectOverview` is the recommended entry point for reading a Project's status.
 
 For detailed Prism workflow patterns, see [references/prism-operations.md](references/prism-operations.md).
 
@@ -170,7 +170,7 @@ For detailed Prism workflow patterns, see [references/prism-operations.md](refer
 | "Insufficient balance"                    | Check balance with `getWalletOverview`; fund or swap                    |
 | "No liquidity"                            | Try smaller amount or different token pair                              |
 | "tool not found"                          | Run `fdx wallet` or `fdx prism` to list available tools; check spelling |
-| "provider not found"                      | Complete Prism onboarding — set account type with `updateAccountType`   |
+| "provider not found"                      | Complete Prism onboarding — set account type with `updateProviderAccountType` |
 
 For diagnostic commands and issue reporting, see [references/troubleshooting.md](references/troubleshooting.md).
 
