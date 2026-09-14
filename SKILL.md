@@ -139,7 +139,9 @@ Prism is the Finance District payment gateway purpose-built for agentic commerce
 
 ### Setting up as a merchant
 
-Set account type (Personal/Business) → create a Project → configure accepted assets and networks → set up settlement wallets → create Project Identify Tokens.
+`getProviderInfo` (with `includeCountries=true`) → `createProjectFromWizard` → `getRequiredUpdates` → `updateSettlementCurrencies` / `updateSettlementFx` → `manageProjectIdentifyToken` action=create with an expiration → `manageStaff` action=invite → `getHomeSummary`.
+
+`getHomeSummary` is the recommended entry point for reading a Project's status going forward. `manageProjectIdentifyToken` action=create accepts `expiration` (`30d` | `180d` | `365d` | `none`, where `none` means a key that never expires).
 
 ### Managing payments and earnings
 
@@ -147,7 +149,7 @@ Use the payment and earnings tools to view transaction history, individual payme
 
 ### Projects
 
-A Project defines your merchant configuration — accepted assets, networks, and settlement wallets. Most Prism tools default to your active Project. Only pass `--projectId` when managing multiple configurations.
+A Project defines your merchant configuration — accepted assets, networks, and settlement wallets. Most Prism tools default to your active Project. Only pass `--projectId` when managing multiple configurations. `getHomeSummary` is the recommended entry point for reading a Project's status.
 
 For detailed Prism workflow patterns, see [references/prism-operations.md](references/prism-operations.md).
 

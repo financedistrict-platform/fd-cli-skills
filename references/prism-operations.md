@@ -7,18 +7,22 @@ This reference covers Prism workflow patterns and configuration guidance. For in
 Setting up a new merchant follows this sequence:
 
 1. **Authenticate**: Complete onboarding if not already authenticated (`fdx status`)
-2. **Set account type**: `fdx prism updateAccountType --accountType Business` (or Personal)
-3. **Create a Project**: Define your merchant configuration with accepted assets and networks
-4. **Configure settlement wallets**: Add wallet addresses where you want to receive payments, by chain
-5. **Create Project Identify Tokens**: Generate tokens for integrating payments into your application — the secret is returned **only once** on creation, so save it immediately
+2. **Discover the provider catalog**: `fdx prism getProviderInfo --includeCountries true` — learn valid country codes, networks, and token symbols before creating the Project
+3. **Create a Project**: `fdx prism createProjectFromWizard` — sets storefront, platform, country, environment, settlement networks, currencies, and wallet source together, and activates the Project
+4. **Check for outstanding config**: `fdx prism getRequiredUpdates` — an empty list means nothing is left to fill in
+5. **Fill any gaps**: `fdx prism updateSettlementCurrencies` / `fdx prism updateSettlementFx` as needed
+6. **Create a Project Identify Token**: `fdx prism manageProjectIdentifyToken --action create --expiration <30d|180d|365d|none>` — the secret is returned **only once** on creation, so save it immediately
+7. **Invite staff** (optional): `fdx prism manageStaff --action invite`
+8. **Check status**: `fdx prism getHomeSummary` — the recommended entry point for reading a Project's status going forward
 
 ## Projects
 
 A Project defines your merchant configuration — accepted assets, networks, and settlement wallets. Think of it as a payment profile.
 
 - **Most tools default to your active Project** — only pass `--projectId` when managing multiple configurations
-- **Configuration sections** can be read and updated independently: assets, networks, and wallet mappings each have their own get/update actions via `configureProject`
-- Use `--help` on `createProject`, `updateProject`, and `configureProject` for the exact JSON structures expected
+- **Configuration sections** can be read and updated independently: `getSettlementSettings` reads networks, currencies, and FX settings in one call; `updateSettlementNetworks`, `updateSettlementCurrencies`, and `updateSettlementFx` update them individually; `resetSettlementDefaults` resets networks, currencies, or wallet source back to platform defaults
+- Use `--help` on `createProjectFromWizard`, `updateProjectAccount`, and the `updateSettlement*` tools for the exact JSON structures expected
+- `getHomeSummary` is the recommended entry point for reading a Project's overall status — prefer it over calling earnings/settlement/payment tools separately
 
 ## Payment Monitoring Workflow
 
@@ -31,7 +35,7 @@ For a merchant checking on their business:
 
 ## Project Identify Token Management
 
-- **Create**: Tokens are generated with a name. The secret is shown only at creation — if lost, delete the token and create a new one
+- **Create**: Tokens are generated with a name and an `expiration` of `30d`, `180d`, `365d`, or `none` (never expires). The secret is shown only at creation — if lost, delete the token and create a new one
 - **Disable vs Delete**: Disabling revokes access without removing the token (reversible). Deleting is permanent
 - **List**: Secret values are never returned in list responses
 
@@ -79,8 +83,9 @@ fdx prism manageStaff --action revoke --projectId "project-guid" --staffId "staf
 
 ## Settlement Wallets
 
-Settlement wallets define where merchant payments are received, per chain.
+Settlement wallets define where a Project's payments are received.
 
-- Each wallet is associated with a specific chain (by numeric chain ID — e.g. 8453 for Base, 1 for Ethereum) and asset
-- You can set a default wallet and label wallets for organization
-- Use `--help` on `manageWallet` for the exact parameters for create, update, and delete actions
+- **Read**: `fdx prism getWalletSettings` — the authoritative settlement destination: wallet source, the merchant's own saved addresses, and the effective receiving address per network
+- **Update**: `fdx prism updateWalletSettings --walletSource <fd-agent|own>` — `fd-agent` routes every network to the FD-managed agent wallet; `own` uses the merchant's own addresses, either one `--walletAddress` for every network or a per-network `--networkWallets` mapping (CAIP-2 network id → address)
+- This moves real money — confirm the addresses with the merchant before calling `updateWalletSettings`, and verify the result with `getWalletSettings` afterward
+- Use `--help` on `updateWalletSettings` for the exact parameters
